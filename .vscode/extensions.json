@@ -1,0 +1,9 @@
+{
+	"recommendations": [
+		"biomejs.biome",
+		"bradlc.vscode-tailwindcss",
+		"lokalise.i18n-ally",
+		"antfu.iconify",
+    "styled-components.vscode-styled-components"
+	]
+}
