@@ -7,7 +7,6 @@ import { Button } from "@/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/ui/tabs";
 import { Text } from "@/ui/typography";
-import { Link } from "react-router";
 
 const Component_Auth_1 = `
 <AuthGuard
@@ -133,9 +132,9 @@ export default function PermissionPage() {
 					<CardDescription>点击下面按钮，当拥有页面指定权限时正常显示，否则显示403</CardDescription>
 				</CardHeader>
 				<CardContent>
-					<Link to="/permission/page-test">
-						<Button>跳转页面</Button>
-					</Link>
+					<div className="text-text-tertiary">
+						<span>Permission test page not available in current routing setup</span>
+					</div>
 				</CardContent>
 			</Card>
 

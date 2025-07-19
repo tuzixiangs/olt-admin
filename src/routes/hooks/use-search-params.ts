@@ -1,8 +1,11 @@
+import { useSearch } from "@tanstack/react-router";
 import { useMemo } from "react";
-import { useSearchParams as _useSearchParams } from "react-router";
 
 export function useSearchParams() {
-	const [searchParams] = _useSearchParams();
+	const search = useSearch({ from: "__root__" });
 
-	return useMemo(() => searchParams, [searchParams]);
+	return useMemo(() => {
+		// 为了保持兼容性，返回一个类似 URLSearchParams 的对象
+		return new URLSearchParams(search as any);
+	}, [search]);
 }

@@ -1,5 +1,5 @@
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/ui/hover-card";
-import { useLocation } from "react-router";
+import { useLocation } from "@tanstack/react-router";
 import type { NavListProps } from "../types";
 import { NavItem } from "./nav-item";
 

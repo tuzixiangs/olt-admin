@@ -10,7 +10,6 @@ import {
 	DropdownMenuTrigger,
 } from "@/ui/dropdown-menu";
 import { useTranslation } from "react-i18next";
-import { NavLink } from "react-router";
 
 /**
  * Account Dropdown
@@ -49,15 +48,15 @@ export default function AccountDropdown() {
 				</div>
 				<DropdownMenuSeparator />
 				<DropdownMenuItem asChild>
-					<NavLink to="https://docs-admin.oltspaces.com/" target="_blank">
+					<a href="https://docs-admin.oltspaces.com/" target="_blank" rel="noopener noreferrer">
 						{t("sys.docs")}
-					</NavLink>
+					</a>
 				</DropdownMenuItem>
-				<DropdownMenuItem asChild>
-					<NavLink to="/management/user/profile">{t("sys.nav.user.profile")}</NavLink>
+				<DropdownMenuItem>
+					<span className="text-text-tertiary">{t("sys.nav.user.profile")} (TODO)</span>
 				</DropdownMenuItem>
-				<DropdownMenuItem asChild>
-					<NavLink to="/management/user/account">{t("sys.nav.user.account")}</NavLink>
+				<DropdownMenuItem>
+					<span className="text-text-tertiary">{t("sys.nav.user.account")} (TODO)</span>
 				</DropdownMenuItem>
 				<DropdownMenuSeparator />
 				<DropdownMenuItem className="font-bold text-warning" onClick={logout}>

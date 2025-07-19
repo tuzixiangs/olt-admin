@@ -1,0 +1,6 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+每次修改完成后使用browser_console_message获取控制台日志信息，看是否有报错。

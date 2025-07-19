@@ -1,4 +1,5 @@
 import tailwindcss from "@tailwindcss/vite";
+import { TanStackRouterVite } from "@tanstack/router-vite-plugin";
 import { vanillaExtractPlugin } from "@vanilla-extract/vite-plugin";
 import react from "@vitejs/plugin-react";
 import { visualizer } from "rollup-plugin-visualizer";
@@ -13,6 +14,7 @@ export default defineConfig(({ mode }) => {
 	return {
 		base,
 		plugins: [
+			TanStackRouterVite(),
 			react({
 				babel: {
 					plugins: ["babel-plugin-styled-components"],
@@ -56,7 +58,7 @@ export default defineConfig(({ mode }) => {
 			rollupOptions: {
 				output: {
 					manualChunks: {
-						"vendor-core": ["react", "react-dom", "react-router"],
+						"vendor-core": ["react", "react-dom"],
 						"vendor-ui": ["antd", "@ant-design/cssinjs", "styled-components"],
 						"vendor-utils": ["axios", "dayjs", "i18next", "zustand", "@iconify/react"],
 						"vendor-charts": ["apexcharts", "react-apexcharts"],
@@ -66,7 +68,7 @@ export default defineConfig(({ mode }) => {
 		},
 
 		optimizeDeps: {
-			include: ["react", "react-dom", "react-router", "antd", "axios", "dayjs"],
+			include: ["react", "react-dom", "antd", "axios", "dayjs"],
 			exclude: ["@iconify/react"],
 		},
 

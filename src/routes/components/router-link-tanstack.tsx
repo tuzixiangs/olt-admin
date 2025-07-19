@@ -5,7 +5,6 @@ interface RouterLinkProps {
 	href: string;
 	children: ReactNode;
 	className?: string;
-	ref?: React.Ref<HTMLAnchorElement>;
 	[key: string]: any;
 }
 

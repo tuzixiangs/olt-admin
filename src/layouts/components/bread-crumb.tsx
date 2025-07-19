@@ -12,10 +12,10 @@ import {
 	BreadcrumbSeparator,
 } from "@/ui/breadcrumb";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/ui/dropdown-menu";
+import { Link, useLocation } from "@tanstack/react-router";
 import { ChevronDown } from "lucide-react";
 import * as React from "react";
 import { useCallback, useMemo } from "react";
-import { Link, useMatches } from "react-router";
 
 interface BreadCrumbProps {
 	maxItems?: number;
@@ -37,7 +37,7 @@ interface BreadcrumbItemData {
 
 export default function BreadCrumb({ maxItems = 3 }: BreadCrumbProps) {
 	const { t } = useLocale();
-	const matches = useMatches();
+	const location = useLocation();
 	const navData = useFilteredNavData();
 
 	const findPathInNavData = useCallback((path: string, items: NavItem[]): NavItem[] => {
@@ -56,7 +56,18 @@ export default function BreadCrumb({ maxItems = 3 }: BreadCrumbProps) {
 	}, []);
 
 	const breadCrumbs = useMemo(() => {
-		const paths = matches.filter((item) => item.pathname !== "/").map((item) => item.pathname);
+		// 从location.pathname构建路径数组
+		const pathname = location.pathname;
+		const pathSegments = pathname.split("/").filter(Boolean);
+		const paths: string[] = [];
+
+		// 构建路径层级: ['/workbench', '/workbench/sub']
+		let currentPath = "";
+		for (const segment of pathSegments) {
+			currentPath += `/${segment}`;
+			paths.push(currentPath);
+		}
+
 		return paths
 			.map((path) => {
 				const navItems = navData.flatMap((section) => (section.meta?.groupKey ? section.children : section));
@@ -78,7 +89,7 @@ export default function BreadCrumb({ maxItems = 3 }: BreadCrumbProps) {
 				};
 			})
 			.filter((item): item is BreadcrumbItemData => item !== null);
-	}, [matches, t, findPathInNavData, navData]);
+	}, [location.pathname, t, findPathInNavData, navData]);
 
 	const renderBreadcrumbItem = (item: BreadcrumbItemData, isLast: boolean) => {
 		const hasItems = item.items && item.items.length > 0;

@@ -1,14 +1,30 @@
 import { GroupInfo } from "@/dict";
 import { GLOBAL_CONFIG } from "@/global-config";
-import { backendDashboardRoutes } from "@/routes/sections/dashboard/backend";
-import { frontendDashboardRoutes } from "@/routes/sections/dashboard/frontend";
 import { useSettings } from "@/store/settingStore";
 import { useUserPermissions } from "@/store/userStore";
 import type { AppRouteObject } from "@/types/router";
 import { checkAny } from "@/utils";
 import { useMemo } from "react";
 
-const navData = GLOBAL_CONFIG.routerMode === "backend" ? backendDashboardRoutes : frontendDashboardRoutes;
+// 基础路由数据 - 为文件路径路由提供静态数据
+const staticNavData: AppRouteObject[] = [
+	{
+		path: "/workbench",
+		meta: {
+			key: "workbench",
+			title: "sys.nav.workbench",
+			icon: "local:ic-workbench",
+		},
+	},
+	{
+		path: "/analysis",
+		meta: {
+			key: "analysis",
+			title: "sys.nav.analysis",
+			icon: "local:ic-analysis",
+		},
+	},
+];
 
 /**
  * 递归处理导航数据，过滤掉没有权限的项目
@@ -48,8 +64,8 @@ const filterItems = (items: AppRouteObject[], permissions: string[]) => {
  * @returns 过滤后的导航数据
  */
 const filterNavData = (permissions: string[]) => {
-	return navData
-		.map((group) => {
+	return staticNavData
+		.map((group: AppRouteObject) => {
 			// 如果是重定向，则返回 null
 			if (group.index) {
 				return null;
@@ -121,16 +137,19 @@ const sortNavData = (navData: AppRouteObject[], isGroup: boolean) => {
 };
 
 /**
- * Hook to get filtered navigation data based on user permissions
- * @returns Filtered navigation data
+ * 获取过滤和排序后的导航数据
  */
-export const useFilteredNavData = () => {
-	const { group: isGroup } = useSettings();
-	const permissions = useUserPermissions();
-	const permissionCodes = useMemo(() => permissions.map((p) => p.code), [permissions]);
-	const filteredNavData = useMemo(
-		() => sortNavData(filterNavData(permissionCodes), isGroup),
-		[permissionCodes, isGroup],
-	);
-	return filteredNavData;
-};
+export function useFilteredNavData() {
+	const userPermissions = useUserPermissions();
+	const { group: groupSetting } = useSettings();
+
+	const filteredData = useMemo(() => {
+		// 使用静态数据替代动态路由数据
+		const filtered =
+			GLOBAL_CONFIG.routerMode === "backend" ? filterNavData(userPermissions.map((p) => p.code)) : staticNavData;
+
+		return sortNavData(filtered, groupSetting);
+	}, [userPermissions, groupSetting]);
+
+	return filteredData;
+}

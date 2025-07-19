@@ -1,7 +1,7 @@
 import { useSettings } from "@/store/settingStore";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/ui/collapsible";
+import { useLocation } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { useLocation } from "react-router";
 import type { NavListProps } from "../types";
 import { NavItem } from "./nav-item";
 

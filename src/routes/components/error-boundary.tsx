@@ -1,12 +1,11 @@
 import { themeVars } from "@/theme/theme.css";
 import { ScrollArea } from "@/ui/scroll-area";
 import { Title } from "@/ui/typography";
+import type { ErrorComponentProps } from "@tanstack/react-router";
 import type { CSSProperties } from "react";
-import { isRouteErrorResponse, useRouteError } from "react-router";
 
-export default function ErrorBoundary() {
-	const error = useRouteError();
-
+// TanStack Router 错误组件接收 error 作为 props
+export default function ErrorBoundary({ error }: ErrorComponentProps) {
 	return (
 		<ScrollArea className="w-full h-screen">
 			<div style={rootStyles()}>
@@ -29,13 +28,14 @@ function parseStackTrace(stack?: string) {
 }
 
 function renderErrorMessage(error: any) {
-	if (isRouteErrorResponse(error)) {
+	// 检查是否是 HTTP 错误响应
+	if (error && typeof error === "object" && "status" in error && "statusText" in error) {
 		return (
 			<>
 				<Title as="h2">
 					{error.status}: {error.statusText}
 				</Title>
-				<p style={messageStyles()}>{error.data}</p>
+				<p style={messageStyles()}>{error.data || error.message}</p>
 			</>
 		);
 	}
@@ -59,7 +59,13 @@ function renderErrorMessage(error: any) {
 		);
 	}
 
-	return <Title as="h2">Unknown Error</Title>;
+	// 默认错误处理
+	return (
+		<>
+			<Title as="h2">Unknown Error</Title>
+			<p style={messageStyles()}>{error ? String(error) : "An unexpected error occurred"}</p>
+		</>
+	);
 }
 
 const rootStyles = (): CSSProperties => {

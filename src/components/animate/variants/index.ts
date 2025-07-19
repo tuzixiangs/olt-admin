@@ -1,4 +1,4 @@
-import type { Variants } from "motion";
+import type { Variants } from "motion/react";
 import { varBgColor, varBgKenburns, varBgPan } from "./background";
 import { varBounce } from "./bounce";
 import { varFade } from "./fade";

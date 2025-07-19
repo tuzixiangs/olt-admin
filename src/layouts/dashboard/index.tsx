@@ -2,40 +2,45 @@ import Logo from "@/components/logo";
 import { GLOBAL_CONFIG } from "@/global-config";
 import { down, useMediaQuery } from "@/hooks";
 import { useSettings } from "@/store/settingStore";
+import type { ReactNode } from "react";
 import { ThemeLayout } from "#/enum";
 import Header from "./header";
 import Main from "./main";
 import MultiTabs from "./multi-tabs";
 import { NavHorizontalLayout, NavMobileLayout, NavVerticalLayout, useFilteredNavData } from "./nav";
 
-export default function DashboardLayout() {
+interface DashboardLayoutProps {
+	children?: ReactNode;
+}
+
+export default function DashboardLayout({ children }: DashboardLayoutProps) {
 	const isMobile = useMediaQuery(down("md"));
 	return (
 		<div data-slot="olt-layout-root" className="w-full min-h-screen bg-background">
-			{isMobile ? <MobileLayout /> : <PcLayout />}
+			{isMobile ? <MobileLayout>{children}</MobileLayout> : <PcLayout>{children}</PcLayout>}
 		</div>
 	);
 }
 
-function MobileLayout() {
+function MobileLayout({ children }: { children?: ReactNode }) {
 	const navData = useFilteredNavData();
 	return (
 		<>
 			{/* Sticky Header */}
 			<Header leftSlot={<NavMobileLayout data={navData} />} />
-			<Main />
+			<Main>{children}</Main>
 		</>
 	);
 }
 
-function PcLayout() {
+function PcLayout({ children }: { children?: ReactNode }) {
 	const { themeLayout } = useSettings();
 
-	if (themeLayout === ThemeLayout.Horizontal) return <PcHorizontalLayout />;
-	return <PcVerticalLayout />;
+	if (themeLayout === ThemeLayout.Horizontal) return <PcHorizontalLayout>{children}</PcHorizontalLayout>;
+	return <PcVerticalLayout>{children}</PcVerticalLayout>;
 }
 
-function PcHorizontalLayout() {
+function PcHorizontalLayout({ children }: { children?: ReactNode }) {
 	const navData = useFilteredNavData();
 	const settings = useSettings();
 	const { multiTab } = settings;
@@ -58,12 +63,12 @@ function PcHorizontalLayout() {
 				{multiTab ? <MultiTabs /> : null}
 			</div>
 
-			<Main />
+			<Main>{children}</Main>
 		</>
 	);
 }
 
-function PcVerticalLayout() {
+function PcVerticalLayout({ children }: { children?: ReactNode }) {
 	const settings = useSettings();
 	const { themeLayout, multiTab } = settings;
 	const navData = useFilteredNavData();
@@ -87,7 +92,7 @@ function PcVerticalLayout() {
 					{/* Multi Tabs */}
 					{multiTab ? <MultiTabs /> : null}
 				</div>
-				<Main />
+				<Main>{children}</Main>
 			</div>
 		</>
 	);

@@ -1,7 +1,7 @@
 import { useFilteredNavData } from "@/layouts/dashboard/nav";
 import type { AppRouteObject } from "@/types/router";
+import { useLocation } from "@tanstack/react-router";
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
-import { useMatches } from "react-router";
 import { useTabOperations } from "../hooks/use-tab-operations";
 import type { KeepAliveTab, MultiTabsContextType } from "../types";
 
@@ -35,12 +35,14 @@ function findPathInNavData(path: string, navData: AppRouteObject[]): AppRouteObj
 export function MultiTabsProvider({ children }: { children: React.ReactNode }) {
 	const [tabs, setTabs] = useState<KeepAliveTab[]>([]);
 	const navData = useFilteredNavData();
-	const matches = useMatches();
+	const location = useLocation();
+
 	const currentRouteMeta = useMemo(() => {
-		const current = matches.at(-1);
-		if (!current) return null;
-		return findPathInNavData(current.pathname, navData);
-	}, [matches, navData]);
+		// 使用 TanStack Router 的 location.pathname
+		const currentPath = location.pathname;
+		if (!currentPath) return null;
+		return findPathInNavData(currentPath, navData);
+	}, [location.pathname, navData]);
 
 	const activeTabRoutePath = useMemo(() => {
 		if (!currentRouteMeta) return "";

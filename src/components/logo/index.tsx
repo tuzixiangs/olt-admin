@@ -1,5 +1,5 @@
 import { cn } from "@/utils";
-import { NavLink } from "react-router";
+import { Link } from "@tanstack/react-router";
 import { Icon } from "../icon";
 
 interface Props {
@@ -8,9 +8,9 @@ interface Props {
 }
 function Logo({ size = 50, className }: Props) {
 	return (
-		<NavLink to="/" className={cn(className)}>
+		<Link to="/" className={cn(className)}>
 			<Icon icon="local:ic-logo" size={size} />
-		</NavLink>
+		</Link>
 	);
 }
 

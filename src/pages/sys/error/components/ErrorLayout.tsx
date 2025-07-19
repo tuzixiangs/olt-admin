@@ -3,10 +3,10 @@ import { varBounce } from "@/components/animate/variants/bounce";
 import { GLOBAL_CONFIG } from "@/global-config";
 import { Button } from "@/ui/button";
 import { Text, Title } from "@/ui/typography";
+import { Link } from "@tanstack/react-router";
 import { m } from "motion/react";
 import type { ReactNode } from "react";
 import { Helmet } from "react-helmet-async";
-import { NavLink } from "react-router";
 
 interface ErrorLayoutProps {
 	title: string;
@@ -56,11 +56,11 @@ export default function ErrorLayout({
 					{slots.footer ? (
 						slots.footer
 					) : (
-						<NavLink to={homePath} className="mt-4 w-full flex justify-center">
+						<Link to={homePath} className="mt-4 w-full flex justify-center">
 							<Button size="lg" variant="contrast">
 								{buttonText}
 							</Button>
-						</NavLink>
+						</Link>
 					)}
 				</MotionContainer>
 			</div>

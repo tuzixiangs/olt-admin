@@ -1,5 +1,5 @@
+import { useLocation } from "@tanstack/react-router";
 import { useEffect, useRef } from "react";
-import { useLocation } from "react-router";
 import { useWindowScroll } from "react-use";
 
 /**
