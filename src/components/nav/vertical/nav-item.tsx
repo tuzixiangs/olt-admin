@@ -5,7 +5,6 @@ import { Tooltip } from "@/ui/tooltip";
 import { TooltipTrigger } from "@/ui/tooltip";
 import { TooltipProvider } from "@/ui/tooltip";
 import { cn } from "@/utils";
-import { isFunction, isString } from "lodash-es";
 import { NavItemRenderer } from "../components";
 import { navItemClasses, navItemStyles } from "../styles";
 import type { NavItemProps } from "../types";
@@ -24,7 +23,7 @@ export function NavItem(item: NavItemProps) {
 			{/* Texts */}
 			<span style={navItemStyles.texts} className="min-h-[24px]">
 				{/* Title */}
-				<span style={navItemStyles.title}>{isFunction(title) ? title() : isString(title) ? t(title) : title}</span>
+				<span style={navItemStyles.title}>{t(title)}</span>
 
 				{/* Caption */}
 				{caption && (

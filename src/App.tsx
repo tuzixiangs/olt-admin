@@ -7,6 +7,7 @@ import { MotionLazy } from "./components/animate/motion-lazy";
 import { RouteLoadingProgress } from "./components/loading";
 import Toast from "./components/toast";
 import { GLOBAL_CONFIG } from "./global-config";
+// import { useScrollRestoration } from "./hooks/use-scroll-restoration";
 import { MultiTabsProvider } from "./layouts/dashboard/multi-tabs/providers/multi-tabs-provider";
 import { AntdAdapter } from "./theme/adapter/antd.adapter";
 import { ThemeProvider } from "./theme/theme-provider";
@@ -23,6 +24,7 @@ if (import.meta.env.DEV) {
 }
 
 function App({ children }: { children: React.ReactNode }) {
+	// useScrollRestoration();
 	return (
 		<HelmetProvider>
 			<QueryClientProvider client={new QueryClient()}>

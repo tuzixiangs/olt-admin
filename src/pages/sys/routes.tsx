@@ -1,6 +1,7 @@
 import { Component } from "@/routes/sections/utils";
 import type { AppRouteObject } from "@/types/router";
 import { t } from "@/utils/i18n";
+import { lazy } from "react";
 import { Navigate } from "react-router";
 
 const sysRoutes: AppRouteObject[] = [
@@ -13,17 +14,17 @@ const sysRoutes: AppRouteObject[] = [
 			{ index: true, element: <Navigate to="/error/403" replace /> },
 			{
 				path: "/error/403",
-				element: Component("/pages/sys/error/Page403"),
+				Component: lazy(() => import("@/pages/sys/error/Page403")),
 				meta: { key: "403", title: t("sys.nav.error.403") },
 			},
 			{
 				path: "/error/404",
-				element: Component("/pages/sys/error/Page404"),
+				Component: lazy(() => import("@/pages/sys/error/Page404")),
 				meta: { key: "404", title: t("sys.nav.error.404") },
 			},
 			{
 				path: "/error/500",
-				element: Component("/pages/sys/error/Page500"),
+				Component: lazy(() => import("@/pages/sys/error/Page500")),
 				meta: { key: "500", title: t("sys.nav.error.500") },
 			},
 		],

@@ -1,7 +1,7 @@
 import { Icon } from "@/components/icon";
-import { Component } from "@/routes/sections/utils";
 import type { AppRouteObject } from "@/types/router";
 import { t } from "@/utils/i18n";
+import { lazy } from "react";
 import { Navigate } from "react-router";
 
 const functionsRoutes: AppRouteObject[] = [
@@ -18,7 +18,7 @@ const functionsRoutes: AppRouteObject[] = [
 			{ index: true, element: <Navigate to="/functions/clipboard" replace /> },
 			{
 				path: "/functions/clipboard",
-				element: Component("/pages/functions/clipboard"),
+				Component: lazy(() => import("@/pages/functions/clipboard")),
 				meta: {
 					key: "clipboard",
 					title: t("sys.nav.clipboard"),
@@ -26,7 +26,7 @@ const functionsRoutes: AppRouteObject[] = [
 			},
 			{
 				path: "/functions/token_expired",
-				element: Component("/pages/functions/token-expired"),
+				Component: lazy(() => import("@/pages/functions/token-expired")),
 				meta: {
 					key: "token_expired",
 					title: t("sys.nav.token_expired"),

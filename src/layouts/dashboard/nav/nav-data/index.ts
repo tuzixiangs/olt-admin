@@ -59,7 +59,7 @@ const filterNavData = (permissions: string[]) => {
 			const filteredItems = filterItems(group.children || [], permissions);
 
 			// 如果组内没有项目了，返回 null
-			if (filteredItems.length === 0 && group.meta?.groupName) {
+			if (filteredItems.length === 0 && group.meta?.groupKey) {
 				return null;
 			}
 

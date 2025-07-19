@@ -2,8 +2,6 @@ import { Icon } from "@/components/icon";
 import useLocale from "@/locales/use-locale";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/ui/collapsible";
 import { cn } from "@/utils";
-import { isFunction, isString } from "lodash-es";
-import type { ReactNode } from "react";
 import { useToggle } from "react-use";
 import type { NavGroupProps } from "../types";
 import { NavList } from "./nav-list";
@@ -24,11 +22,7 @@ export function NavGroup({ name, items }: NavGroupProps) {
 	);
 }
 
-function Group({
-	name,
-	open,
-	onClick,
-}: { name?: string | ReactNode | (() => string | ReactNode); open: boolean; onClick: (nextValue: boolean) => void }) {
+function Group({ name, open, onClick }: { name?: string; open: boolean; onClick: (nextValue: boolean) => void }) {
 	const { t } = useLocale();
 	return (
 		name && (
@@ -56,7 +50,7 @@ function Group({
 						"hover:text-text-primary",
 					)}
 				>
-					{isFunction(name) ? name() : isString(name) ? t(name) : name}
+					{t(name)}
 				</span>
 			</div>
 		)

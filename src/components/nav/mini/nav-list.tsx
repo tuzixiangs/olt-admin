@@ -5,7 +5,8 @@ import { NavRootItem } from "./nav-root-item";
 import { NavSubItem } from "./nav-sub-item";
 
 export function NavList({ data, depth = 0 }: NavListProps) {
-	const hasChild = data.children && data.children.length > 0;
+	const children = data.children?.filter((item) => !item.meta?.hideMenu) || [];
+	const hasChild = children && children.length > 0;
 	const location = useLocation();
 	const isActive = location.pathname.includes(data.path || "");
 
@@ -62,7 +63,7 @@ export function NavList({ data, depth = 0 }: NavListProps) {
 			<HoverCard openDelay={100}>
 				<HoverCardTrigger>{renderNavItem()}</HoverCardTrigger>
 				<HoverCardContent side="right" sideOffset={10} className="p-1">
-					{data.children?.map((child) => (
+					{children.map((child) => (
 						<NavList key={child.meta?.key} data={child} depth={depth + 1} />
 					))}
 				</HoverCardContent>

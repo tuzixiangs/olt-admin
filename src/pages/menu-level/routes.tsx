@@ -1,7 +1,7 @@
 import { Icon } from "@/components/icon";
-import { Component } from "@/routes/sections/utils";
 import type { AppRouteObject } from "@/types/router";
 import { t } from "@/utils/i18n";
+import { lazy } from "react";
 import { Navigate } from "react-router";
 
 const menuLevelRoutes: AppRouteObject[] = [
@@ -18,7 +18,7 @@ const menuLevelRoutes: AppRouteObject[] = [
 			{ index: true, element: <Navigate to="/menu_level/1a" replace /> },
 			{
 				path: "/menu_level/1a",
-				element: Component("/pages/menu-level/menu-level-1a"),
+				Component: lazy(() => import("@/pages/menu-level/menu-level-1a")),
 				meta: {
 					key: "1a",
 					title: t("sys.nav.menulevel.1a"),
@@ -34,7 +34,7 @@ const menuLevelRoutes: AppRouteObject[] = [
 					{ index: true, element: <Navigate to="/menu_level/1b/2a" replace /> },
 					{
 						path: "/menu_level/1b/2a",
-						element: Component("/pages/menu-level/menu-level-1b/menu-level-2a"),
+						Component: lazy(() => import("@/pages/menu-level/menu-level-1b/menu-level-2a")),
 						meta: {
 							key: "2a",
 							title: t("sys.nav.menulevel.1b.2a"),
@@ -50,7 +50,7 @@ const menuLevelRoutes: AppRouteObject[] = [
 							{ index: true, element: <Navigate to="/menu_level/1b/2b/3a" replace /> },
 							{
 								path: "/menu_level/1b/2b/3a",
-								element: Component("/pages/menu-level/menu-level-1b/menu-level-2b/menu-level-3a"),
+								Component: lazy(() => import("@/pages/menu-level/menu-level-1b/menu-level-2b/menu-level-3a")),
 								meta: {
 									key: "3a",
 									title: t("sys.nav.menulevel.1b.2b.3a"),
@@ -58,7 +58,7 @@ const menuLevelRoutes: AppRouteObject[] = [
 							},
 							{
 								path: "/menu_level/1b/2b/3b",
-								element: Component("/pages/menu-level/menu-level-1b/menu-level-2b/menu-level-3b"),
+								Component: lazy(() => import("@/pages/menu-level/menu-level-1b/menu-level-2b/menu-level-3b")),
 								meta: {
 									key: "3b",
 									title: t("sys.nav.menulevel.1b.2b.3b"),

@@ -2,7 +2,6 @@ import Icon from "@/components/icon/icon";
 import useLocale from "@/locales/use-locale";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/ui/tooltip";
 import { cn } from "@/utils";
-import { isFunction, isString } from "lodash-es";
 import { NavItemRenderer } from "../components";
 import { navItemClasses, navItemStyles } from "../styles";
 import type { NavItemProps } from "../types";
@@ -35,7 +34,7 @@ export const NavRootItem = (item: NavItemProps) => {
 
 			{/* Title */}
 			<span style={navItemStyles.title} className="text-center! text-xs! mt-1">
-				{isFunction(item.title) ? item.title() : isString(item.title) ? t(item.title) : item.title}
+				{t(item.title)}
 			</span>
 		</>
 	);

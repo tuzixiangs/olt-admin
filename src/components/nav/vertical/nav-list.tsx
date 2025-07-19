@@ -9,7 +9,8 @@ export function NavList({ data, depth = 1 }: NavListProps) {
 	const location = useLocation();
 	const isActive = location.pathname.includes(data.path || "");
 	const [open, setOpen] = useState(isActive);
-	const hasChild = data.children && data.children.length > 0;
+	const children = data.children?.filter((item) => !item.meta?.hideMenu) || [];
+	const hasChild = children && children.length > 0;
 	const { accordion: accordionSetting } = useSettings();
 
 	const handleClick = () => {
@@ -53,7 +54,7 @@ export function NavList({ data, depth = 1 }: NavListProps) {
 			{hasChild && (
 				<CollapsibleContent>
 					<div className="ml-4 mt-1 flex flex-col gap-1">
-						{data.children?.map((child) => (
+						{children.map((child) => (
 							<NavList key={child.meta?.key} data={child} depth={depth + 1} />
 						))}
 					</div>

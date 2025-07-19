@@ -11,7 +11,11 @@ export function NavVertical({ data, className, ...props }: NavProps) {
 		<nav className={cn("flex w-full flex-col gap-1", className)} {...props}>
 			{data?.map((group, index) =>
 				group.meta?.groupKey && groupSetting ? (
-					<NavGroup key={group.path || index} name={group.meta?.groupName} items={group.children || []} />
+					<NavGroup
+						key={group.path || index}
+						name={group.meta?.groupName}
+						items={group.children?.filter((item) => !item.meta?.hideMenu) || []}
+					/>
 				) : (
 					<ul key={group.path || index} className="flex w-full flex-col gap-1">
 						<NavList key={group.path || index} data={group} depth={1} />

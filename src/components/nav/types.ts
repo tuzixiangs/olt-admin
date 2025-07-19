@@ -33,7 +33,7 @@ export type NavListProps = Pick<NavItemProps, "depth"> & {
  * Group
  */
 export type NavGroupProps = Omit<NavListProps, "data" | "depth"> & {
-	name?: string | React.ReactNode | (() => string | React.ReactNode);
+	name?: string;
 	items: AppRouteObject[];
 };
 

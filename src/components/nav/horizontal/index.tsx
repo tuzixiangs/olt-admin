@@ -11,7 +11,11 @@ export function NavHorizontal({ data, className, ...props }: NavProps) {
 		<nav className={cn("flex items-center gap-1 min-h-[var(--layout-nav-height-horizontal)]", className)} {...props}>
 			{data.map((group, index) =>
 				group.meta?.groupKey && groupSetting ? (
-					<NavGroup key={group.path || index} name={group.meta?.groupName} items={group.children || []} />
+					<NavGroup
+						key={group.path || index}
+						name={group.meta?.groupName}
+						items={group.children?.filter((item) => !item.meta?.hideMenu) || []}
+					/>
 				) : (
 					<ul key={group.path || index} className="flex flex-row gap-1">
 						<NavList key={group.path || index} data={group} depth={1} />
