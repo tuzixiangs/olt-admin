@@ -1,6 +1,7 @@
 import "./global.css";
 import "./theme/theme.css";
 import "./locales/i18n";
+import "@ant-design/v5-patch-for-react-19";
 import ReactDOM from "react-dom/client";
 import { Outlet, type RouteObject, RouterProvider, createBrowserRouter } from "react-router";
 import App from "./App";
