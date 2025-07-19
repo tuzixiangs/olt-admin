@@ -2,7 +2,6 @@ import Icon from "@/components/icon/icon";
 import useLocale from "@/locales/use-locale";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/ui/tooltip";
 import { cn } from "@/utils";
-import { isFunction, isString } from "lodash-es";
 import { NavItemRenderer } from "../components";
 import { navItemClasses, navItemStyles } from "../styles";
 import type { NavItemProps } from "../types";
@@ -21,7 +20,7 @@ export const NavItem = (item: NavItemProps) => {
 
 			{/* Title */}
 			<span style={navItemStyles.title} className="ml-2 block! flex-auto!">
-				{isFunction(item.title) ? item.title() : isString(item.title) ? t(item.title) : item.title}
+				{t(item.title)}
 			</span>
 
 			{/* Caption */}

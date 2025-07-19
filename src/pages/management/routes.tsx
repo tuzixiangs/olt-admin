@@ -1,7 +1,7 @@
 import { Icon } from "@/components/icon";
-import { Component } from "@/routes/sections/utils";
 import type { AppRouteObject } from "@/types/router";
 import { t } from "@/utils/i18n";
+import { lazy } from "react";
 import { Navigate } from "react-router";
 
 const managementRoutes: AppRouteObject[] = [
@@ -26,7 +26,7 @@ const managementRoutes: AppRouteObject[] = [
 					{ index: true, element: <Navigate to="/management/user/profile" replace /> },
 					{
 						path: "/management/user/profile",
-						element: Component("/pages/management/user/profile"),
+						Component: lazy(() => import("@/pages/management/user/profile")),
 						meta: {
 							key: "profile",
 							title: t("sys.nav.user.profile"),
@@ -34,7 +34,7 @@ const managementRoutes: AppRouteObject[] = [
 					},
 					{
 						path: "/management/user/account",
-						element: Component("/pages/management/user/account"),
+						Component: lazy(() => import("@/pages/management/user/account")),
 						meta: {
 							key: "account",
 							title: t("sys.nav.user.account"),
@@ -52,7 +52,7 @@ const managementRoutes: AppRouteObject[] = [
 					{ index: true, element: <Navigate to="/management/system/permission" replace /> },
 					{
 						path: "/management/system/permission",
-						element: Component("/pages/management/system/permission"),
+						Component: lazy(() => import("@/pages/management/system/permission")),
 						meta: {
 							key: "permission",
 							title: t("sys.nav.system.permission"),
@@ -60,7 +60,7 @@ const managementRoutes: AppRouteObject[] = [
 					},
 					{
 						path: "/management/system/role",
-						element: Component("/pages/management/system/role"),
+						Component: lazy(() => import("@/pages/management/system/role")),
 						meta: {
 							key: "role",
 							title: t("sys.nav.system.role"),
@@ -68,7 +68,7 @@ const managementRoutes: AppRouteObject[] = [
 					},
 					{
 						path: "/management/system/user",
-						element: Component("/pages/management/system/user"),
+						Component: lazy(() => import("@/pages/management/system/user")),
 						meta: {
 							key: "user",
 							title: t("sys.nav.system.user"),

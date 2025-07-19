@@ -1,7 +1,7 @@
 import { Icon } from "@/components/icon";
-import { Component } from "@/routes/sections/utils";
 import type { AppRouteObject } from "@/types/router";
 import { t } from "@/utils/i18n";
+import { lazy } from "react";
 import { Navigate } from "react-router";
 
 const componentsRoutes: AppRouteObject[] = [
@@ -18,7 +18,7 @@ const componentsRoutes: AppRouteObject[] = [
 			{ index: true, element: <Navigate to="/components/animate" replace /> },
 			{
 				path: "/components/animate",
-				element: Component("/pages/components/animate"),
+				Component: lazy(() => import("@/pages/components/animate")),
 				meta: {
 					key: "animate",
 					title: t("sys.nav.animate"),
@@ -26,7 +26,7 @@ const componentsRoutes: AppRouteObject[] = [
 			},
 			{
 				path: "/components/scroll",
-				element: Component("/pages/components/scroll"),
+				Component: lazy(() => import("@/pages/components/scroll")),
 				meta: {
 					key: "scroll",
 					title: t("sys.nav.scroll"),
@@ -34,7 +34,7 @@ const componentsRoutes: AppRouteObject[] = [
 			},
 			{
 				path: "/components/multi-language",
-				element: Component("/pages/components/multi-language"),
+				Component: lazy(() => import("@/pages/components/multi-language")),
 				meta: {
 					key: "multi-language",
 					title: t("sys.nav.i18n"),
@@ -42,7 +42,7 @@ const componentsRoutes: AppRouteObject[] = [
 			},
 			{
 				path: "/components/icon",
-				element: Component("/pages/components/icon"),
+				Component: lazy(() => import("@/pages/components/icon")),
 				meta: {
 					key: "icon",
 					title: t("sys.nav.icon"),
@@ -50,7 +50,7 @@ const componentsRoutes: AppRouteObject[] = [
 			},
 			{
 				path: "/components/chart",
-				element: Component("/pages/components/chart"),
+				Component: lazy(() => import("@/pages/components/chart")),
 				meta: {
 					key: "chart",
 					title: t("sys.nav.chart"),
@@ -58,7 +58,7 @@ const componentsRoutes: AppRouteObject[] = [
 			},
 			{
 				path: "/components/toast",
-				element: Component("/pages/components/toast"),
+				Component: lazy(() => import("@/pages/components/toast")),
 				meta: {
 					key: "toast",
 					title: t("sys.nav.toast"),
@@ -66,7 +66,7 @@ const componentsRoutes: AppRouteObject[] = [
 			},
 			{
 				path: "/components/upload",
-				element: Component("/pages/components/upload"),
+				Component: lazy(() => import("@/pages/components/upload")),
 				meta: {
 					key: "upload",
 					title: t("sys.nav.upload"),
