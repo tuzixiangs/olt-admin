@@ -26,11 +26,33 @@ const dashboardData = {
 			avgTimeChange: -0.2,
 			chart: {
 				series: [
-					{ name: "Natural", data: [40000, 60000, 90000, 100000, 80000, 70000, 60000, 50000, 70000, 90000, 80000, 90000] },
-					{ name: "Referral", data: [30000, 40000, 50000, 60000, 50000, 40000, 30000, 40000, 50000, 60000, 50000, 40000] },
-					{ name: "Direct", data: [50000, 60000, 40000, 30000, 40000, 50000, 60000, 70000, 80000, 70000, 60000, 50000] },
+					{
+						name: "Natural",
+						data: [40000, 60000, 90000, 100000, 80000, 70000, 60000, 50000, 70000, 90000, 80000, 90000],
+					},
+					{
+						name: "Referral",
+						data: [30000, 40000, 50000, 60000, 50000, 40000, 30000, 40000, 50000, 60000, 50000, 40000],
+					},
+					{
+						name: "Direct",
+						data: [50000, 60000, 40000, 30000, 40000, 50000, 60000, 70000, 80000, 70000, 60000, 50000],
+					},
 				],
-				categories: ["01 Jun", "02 Jun", "03 Jun", "04 Jun", "05 Jun", "06 Jun", "07 Jun", "08 Jun", "09 Jun", "10 Jun", "11 Jun", "12 Jun"],
+				categories: [
+					"01 Jun",
+					"02 Jun",
+					"03 Jun",
+					"04 Jun",
+					"05 Jun",
+					"06 Jun",
+					"07 Jun",
+					"08 Jun",
+					"09 Jun",
+					"10 Jun",
+					"11 Jun",
+					"12 Jun",
+				],
 			},
 		},
 		week: {
@@ -40,11 +62,33 @@ const dashboardData = {
 			avgTimeChange: -0.5,
 			chart: {
 				series: [
-					{ name: "Natural", data: [400000, 600000, 900000, 1000000, 800000, 700000, 600000, 500000, 700000, 900000, 800000, 900000] },
-					{ name: "Referral", data: [300000, 400000, 500000, 600000, 500000, 400000, 300000, 400000, 500000, 600000, 500000, 400000] },
-					{ name: "Direct", data: [500000, 600000, 400000, 300000, 400000, 500000, 600000, 700000, 800000, 700000, 600000, 500000] },
+					{
+						name: "Natural",
+						data: [400000, 600000, 900000, 1000000, 800000, 700000, 600000, 500000, 700000, 900000, 800000, 900000],
+					},
+					{
+						name: "Referral",
+						data: [300000, 400000, 500000, 600000, 500000, 400000, 300000, 400000, 500000, 600000, 500000, 400000],
+					},
+					{
+						name: "Direct",
+						data: [500000, 600000, 400000, 300000, 400000, 500000, 600000, 700000, 800000, 700000, 600000, 500000],
+					},
 				],
-				categories: ["Week 1", "Week 2", "Week 3", "Week 4", "Week 5", "Week 6", "Week 7", "Week 8", "Week 9", "Week 10", "Week 11", "Week 12"],
+				categories: [
+					"Week 1",
+					"Week 2",
+					"Week 3",
+					"Week 4",
+					"Week 5",
+					"Week 6",
+					"Week 7",
+					"Week 8",
+					"Week 9",
+					"Week 10",
+					"Week 11",
+					"Week 12",
+				],
 			},
 		},
 		month: {
@@ -54,9 +98,18 @@ const dashboardData = {
 			avgTimeChange: -0.3,
 			chart: {
 				series: [
-					{ name: "Natural", data: [50000, 60000, 65000, 67000, 62000, 64000, 66000, 68000, 69000, 70000, 71000, 72000] },
-					{ name: "Referral", data: [40000, 42000, 43000, 44000, 45000, 46000, 47000, 48000, 49000, 50000, 51000, 52000] },
-					{ name: "Direct", data: [45000, 47000, 48000, 49000, 50000, 51000, 52000, 53000, 54000, 55000, 56000, 57000] },
+					{
+						name: "Natural",
+						data: [50000, 60000, 65000, 67000, 62000, 64000, 66000, 68000, 69000, 70000, 71000, 72000],
+					},
+					{
+						name: "Referral",
+						data: [40000, 42000, 43000, 44000, 45000, 46000, 47000, 48000, 49000, 50000, 51000, 52000],
+					},
+					{
+						name: "Direct",
+						data: [45000, 47000, 48000, 49000, 50000, 51000, 52000, 53000, 54000, 55000, 56000, 57000],
+					},
 				],
 				categories: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
 			},
@@ -190,6 +243,7 @@ export default function Analysis() {
 	const sessionDevices = dashboardData.sessionDevices[timeType];
 	const topChannels = dashboardData.topChannels[timeType];
 	const trafficData = dashboardData.trafficData[timeType];
+	console.count("Analysis");
 
 	const chartOptions = useChart({
 		xaxis: { categories: webAnalytic.chart.categories },
@@ -417,7 +471,12 @@ export default function Analysis() {
 					<CardContent>
 						<div className="flex flex-col items-center gap-2">
 							<div className="w-full max-w-[180px]">
-								<Chart type="donut" height={320} options={deviceChartOptions} series={sessionDevices.map((d) => d.value)} />
+								<Chart
+									type="donut"
+									height={320}
+									options={deviceChartOptions}
+									series={sessionDevices.map((d) => d.value)}
+								/>
 							</div>
 							<div className="flex justify-center gap-4 mt-2">
 								{sessionDevices.map((d) => (

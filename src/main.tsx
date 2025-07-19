@@ -1,6 +1,7 @@
 import "./global.css";
 import "./theme/theme.css";
 import "./locales/i18n";
+import "@ant-design/v5-patch-for-react-19";
 import ReactDOM from "react-dom/client";
 import { Outlet, type RouteObject, RouterProvider, createBrowserRouter } from "react-router";
 import App from "./App";
@@ -8,6 +9,7 @@ import { worker } from "./_mock";
 import menuService from "./api/services/menuService";
 import { registerLocalIcons } from "./components/icon";
 import { GLOBAL_CONFIG } from "./global-config";
+import { RefineProvider } from "./refine/providers";
 import ErrorBoundary from "./routes/components/error-boundary";
 import { routesSection } from "./routes/sections";
 import { urlJoin } from "./utils";
@@ -21,14 +23,20 @@ if (GLOBAL_CONFIG.routerMode === "backend") {
 	await menuService.getMenuList();
 }
 
+const AppWithRefine = () => {
+	return (
+		<RefineProvider>
+			<App>
+				<Outlet />
+			</App>
+		</RefineProvider>
+	);
+};
+
 const router = createBrowserRouter(
 	[
 		{
-			Component: () => (
-				<App>
-					<Outlet />
-				</App>
-			),
+			Component: AppWithRefine,
 			errorElement: <ErrorBoundary />,
 			children: routesSection as RouteObject[],
 		},

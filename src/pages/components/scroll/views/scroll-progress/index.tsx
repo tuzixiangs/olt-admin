@@ -9,8 +9,8 @@ export default function ScrollProgressView() {
 	const containerProgress = useScrollProgress("container");
 
 	return (
-		<>
-			<Button variant="link" asChild>
+        <>
+            <Button variant="link" asChild>
 				<a
 					href="https://www.framer.com/motion/"
 					style={{ color: themeVars.colors.palette.primary.default }}
@@ -19,7 +19,7 @@ export default function ScrollProgressView() {
 					https://www.framer.com/motion/
 				</a>
 			</Button>
-			<Card title="ScrollProgress">
+            <Card title="ScrollProgress">
 				<CardHeader>
 					<CardTitle>ScrollProgress</CardTitle>
 				</CardHeader>
@@ -28,11 +28,11 @@ export default function ScrollProgressView() {
 					<div ref={containerProgress.elementRef} className="h-80 overflow-auto">
 						{[...Array(4)].map((_, index) => (
 							// biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
-							<div key={index}>{TEXT}</div>
+							(<div key={index}>{TEXT}</div>)
 						))}
 					</div>
 				</CardContent>
 			</Card>
-		</>
-	);
+        </>
+    );
 }
