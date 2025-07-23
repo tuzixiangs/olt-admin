@@ -10,7 +10,7 @@
 @import "tw-animate-css";
 
 /* import olt table */
-@import "./styles/olt-table.css";
+@import "./styles/index.css";
 
 /* config  tailwind */
 @config "../tailwind.config.ts";

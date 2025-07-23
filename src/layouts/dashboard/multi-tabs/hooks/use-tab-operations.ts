@@ -1,7 +1,7 @@
 import { GLOBAL_CONFIG } from "@/global-config";
 import { useRouter } from "@/routes/hooks";
 import { type Dispatch, type SetStateAction, useCallback } from "react";
-import type { KeepAliveTab } from "../types";
+import type { KeepAliveTab, TabAction } from "../types";
 
 export function useTabOperations(
 	tabs: KeepAliveTab[],
@@ -90,6 +90,37 @@ export function useTabOperations(
 		[activeTabRoutePath, setTabs],
 	);
 
+	const updateTabTitle = useCallback(
+		(path: string, title: string, action: TabAction) => {
+			setTabs((prev) => {
+				const newTabs = [...prev];
+				const index = newTabs.findIndex((item) => item.path === path);
+				if (index >= 0) {
+					let newTitle = title;
+					if (action === "replace") {
+						newTitle = title;
+					} else if (action === "join") {
+						const splitTitle = newTabs[index].handle?.title?.split(" - ");
+						newTitle = `${splitTitle?.[0]} - ${title}`;
+					}
+					newTabs[index] = { ...newTabs[index], handle: { ...newTabs[index].handle, title: newTitle } };
+				}
+				return newTabs;
+			});
+		},
+		[setTabs],
+	);
+
+	/**
+	 * 手动关闭tab,需要自行处理路由跳转
+	 */
+	const manualCloseTab = useCallback(
+		(path: string) => {
+			setTabs((prev) => prev.filter((item) => item.path !== path));
+		},
+		[setTabs],
+	);
+
 	return {
 		closeTab,
 		closeOthersTab,
@@ -97,5 +128,7 @@ export function useTabOperations(
 		closeLeft,
 		closeRight,
 		refreshTab,
+		updateTabTitle,
+		manualCloseTab,
 	};
 }

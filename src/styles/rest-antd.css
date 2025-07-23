@@ -1,0 +1,11 @@
+.ant-pro-table {
+  .ant-pro-table-search {
+    margin-block-end: 0px;
+  }
+  .ant-pro-query-filter {
+    padding: 12px 0;
+  }
+  .ant-pro-card-body {
+    padding-inline: 0px;
+  }
+}

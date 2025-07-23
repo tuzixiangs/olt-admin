@@ -64,10 +64,12 @@ export default function BreadCrumb({ maxItems = 3 }: BreadCrumbProps) {
 
 				const currentItem = pathItems[pathItems.length - 1];
 				const children =
-					currentItem.children?.map((child) => ({
-						key: child.path,
-						label: t(child.handle?.title || ""),
-					})) ?? [];
+					currentItem.children
+						?.filter((child) => !child.handle?.hideMenu)
+						.map((child) => ({
+							key: child.path,
+							label: t(child.handle?.title || ""),
+						})) ?? [];
 
 				return {
 					key: currentItem.path,

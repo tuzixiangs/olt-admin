@@ -1,5 +1,5 @@
 import type { ProFormInstance } from "@ant-design/pro-components";
-import { useQuery } from "@tanstack/react-query";
+import { type UseQueryOptions, useQuery } from "@tanstack/react-query";
 import type { TablePaginationConfig, TableProps } from "antd";
 import type { FilterValue, SorterResult, TableCurrentDataSource } from "antd/es/table/interface";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -16,6 +16,12 @@ type ServiceFunction<TData = any, TParams = any> = (
 	searchParams?: TParams,
 ) => Promise<{ list: TData[]; total: number }>;
 
+// 定义查询返回数据类型
+interface QueryResult<TData = any> {
+	list: TData[];
+	total: number;
+}
+
 // 分页参数类型
 interface PaginationParams {
 	current: number;
@@ -29,8 +35,10 @@ interface PaginationParams {
 interface UseProTableOptions<TParams = any> {
 	defaultPageSize?: number;
 	defaultParams?: [PaginationParams, TParams?];
+	manual?: boolean; // 是否手动查询，默认 false
+	queryOptions?: Omit<UseQueryOptions<QueryResult, Error>, "queryKey" | "queryFn">; // 支持完整的 useQuery 配置
 	queryKey: any[];
-	onSuccess?: (data: { list: any[]; total: number }) => void;
+	onSuccess?: (data: QueryResult) => void;
 	onError?: (error: any) => void;
 }
 
@@ -53,6 +61,7 @@ interface UseProTableResult<TData = any, TParams = any> {
 		reset: () => void;
 	};
 	refresh: () => void;
+	run: (newParams?: [PaginationParams, TParams?]) => void; // 手动查询方法
 	params: [PaginationParams, TParams?];
 }
 
@@ -62,7 +71,16 @@ export function useProTable<TData = any, TParams = any>(
 		queryKey: [],
 	},
 ): UseProTableResult<TData, TParams> {
-	const { defaultPageSize = 10, defaultParams, queryKey = [], onSuccess, onError } = options;
+	const {
+		defaultPageSize = 10,
+		defaultParams,
+		manual = false, // 默认自动查询
+		queryKey = [],
+		onSuccess,
+		onError,
+		queryOptions,
+	} = options;
+
 	const antdService: ServiceFunction<TData, TParams> = async (...args) => {
 		const [{ current, pageSize }, formData = {}] = args;
 
@@ -80,6 +98,7 @@ export function useProTable<TData = any, TParams = any>(
 			total: response.total,
 		};
 	};
+
 	// 分页和搜索参数状态
 	const [params, setParams] = useState<[PaginationParams, TParams?]>(() => {
 		if (defaultParams) {
@@ -94,11 +113,12 @@ export function useProTable<TData = any, TParams = any>(
 		];
 	});
 
-	// 使用 useQuery 获取数据
-	const { data, isLoading, refetch, error } = useQuery({
+	// 使用 useQuery 获取数据，支持完整配置
+	const { data, isLoading, refetch, error } = useQuery<QueryResult<TData>, Error>({
+		...queryOptions, // 传递用户的所有 useQuery 配置
 		queryKey: [...queryKey, params[0], params[1]],
 		queryFn: () => antdService(params[0], params[1]),
-		enabled: true,
+		enabled: !manual, // 根据 manual 控制自动查询
 	});
 
 	// 使用 useEffect 来处理成功和错误回调
@@ -113,6 +133,18 @@ export function useProTable<TData = any, TParams = any>(
 			onError(error);
 		}
 	}, [error, onError]);
+
+	// 手动查询方法
+	const run = useCallback(
+		(newParams?: [PaginationParams, TParams?]) => {
+			if (newParams) {
+				setParams(newParams);
+			}
+			// 手动触发查询
+			refetch();
+		},
+		[refetch],
+	);
 
 	// 处理分页变化
 	const handlePaginationChange = useCallback((page: number, pageSize?: number) => {
@@ -165,26 +197,41 @@ export function useProTable<TData = any, TParams = any>(
 	const formRef = useRef<ProFormInstance>(undefined);
 
 	// 搜索提交
-	const handleSearch = useCallback((values?: TParams) => {
-		setParams(([paginationParams]) => [
-			{
-				...paginationParams,
-				current: 1, // 搜索时重置到第一页
-			},
-			values,
-		]);
-	}, []);
+	const handleSearch = useCallback(
+		(values?: TParams) => {
+			const newParams: [PaginationParams, TParams?] = [
+				{
+					current: 1, // 搜索时重置到第一页
+					pageSize: params[0].pageSize,
+				},
+				values,
+			];
+			setParams(newParams);
+
+			// 如果是手动模式，需要手动触发查询
+			if (manual) {
+				refetch();
+			}
+		},
+		[manual, refetch, params],
+	);
 
 	// 重置搜索
 	const handleReset = useCallback(() => {
-		setParams([
+		const newParams: [PaginationParams, TParams?] = [
 			{
 				current: 1,
 				pageSize: defaultPageSize,
 			},
 			undefined,
-		]);
-	}, [defaultPageSize]);
+		];
+		setParams(newParams);
+
+		// 如果是手动模式，需要手动触发查询
+		if (manual) {
+			refetch();
+		}
+	}, [defaultPageSize, manual, refetch]);
 
 	// tableProps里面的搜索和提交
 	const onSubmit = useCallback(
@@ -232,6 +279,7 @@ export function useProTable<TData = any, TParams = any>(
 			reset: handleReset,
 		},
 		refresh: handleRefresh,
+		run,
 		params,
 	};
 }

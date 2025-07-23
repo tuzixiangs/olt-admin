@@ -28,6 +28,7 @@ const OltTable = <T extends Record<string, any> = any, Params extends ParamsType
 	...tableProps
 }: OltTableProps<T, Params>) => {
 	const { scroll, tableContainerRef } = useTableScroll();
+	// const tableContainerRef = useRef<HTMLDivElement>(null);
 	const staticRef = useRef<HTMLDivElement>(null);
 
 	// 根据 autoHeight 决定使用哪个 ref 和 scroll
@@ -45,6 +46,7 @@ const OltTable = <T extends Record<string, any> = any, Params extends ParamsType
 		<div ref={containerRef} className="page-container">
 			<ProTable<T, Params>
 				{...tableProps}
+				className={`${tableProps.className || ""} olt-table`}
 				scroll={scrollConfig || tableProps.scroll}
 				// scroll={{ x: "max-content", y: height }}
 				rowClassName={`${stripe ? "olt-table-stripe" : ""} ${rowClickable ? "olt-table-row-clickable" : ""} ${

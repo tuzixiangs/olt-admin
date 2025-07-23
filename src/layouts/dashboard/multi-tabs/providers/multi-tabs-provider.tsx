@@ -2,7 +2,7 @@ import type { RouteMeta } from "@/types/router";
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { useMatches } from "react-router";
 import { useTabOperations } from "../hooks/use-tab-operations";
-import type { KeepAliveTab, MultiTabsContextType } from "../types";
+import type { KeepAliveTab, MultiTabsContextType, TabActionParams } from "../types";
 
 const MultiTabsContext = createContext<MultiTabsContextType>({
 	tabs: [],
@@ -14,6 +14,8 @@ const MultiTabsContext = createContext<MultiTabsContextType>({
 	closeLeft: () => {},
 	closeRight: () => {},
 	refreshTab: () => {},
+	updateTabTitle: () => {},
+	manualCloseTab: () => {},
 });
 
 export function MultiTabsProvider({ children }: { children: React.ReactNode }) {
@@ -23,7 +25,8 @@ export function MultiTabsProvider({ children }: { children: React.ReactNode }) {
 		const current = matches.at(-1);
 		if (!current) return null;
 		return {
-			handle: (current.handle || {}) as RouteMeta,
+			data: current?.data,
+			handle: { ...(current.handle || {}) } as RouteMeta,
 			path: current.pathname,
 		};
 	}, [matches]);
@@ -40,13 +43,26 @@ export function MultiTabsProvider({ children }: { children: React.ReactNode }) {
 		setTabs((prev) => {
 			const filtered = prev.filter((item) => !item.handle?.hideTab);
 			const { path } = currentRouteMeta;
-
+			if (!currentRouteMeta?.handle?.title || currentRouteMeta?.handle?.hideTab || !path) {
+				return filtered;
+			}
 			const isExisted = filtered.find((item) => item.path === path);
-			if (!isExisted && currentRouteMeta.handle.title) {
+			if (!isExisted) {
+				const { tabTitle, tabAction } = (currentRouteMeta?.data || {}) as TabActionParams;
+				// 利用 loader 中的 tabTitle 和 tabAction 更新 tab 的 title
+				let title = (currentRouteMeta?.handle as RouteMeta)?.title || "";
+				if (tabTitle && tabAction) {
+					if (tabAction === "replace") {
+						title = tabTitle;
+					} else if (tabAction === "join") {
+						title = `${title} - ${tabTitle}`;
+					}
+				}
 				return [
 					...filtered,
 					{
 						...currentRouteMeta,
+						handle: { ...(currentRouteMeta?.handle || {}), title },
 						key: path || "/",
 						timeStamp: new Date().getTime().toString(),
 					},

@@ -15,6 +15,8 @@ export type MultiTabsContextType = {
 	closeLeft: (path: string) => void;
 	closeRight: (path: string) => void;
 	refreshTab: (path?: string) => void;
+	updateTabTitle: (path: string, title: string, action: TabAction) => void;
+	manualCloseTab: (path: string) => void;
 };
 
 export type TabItemProps = {
@@ -28,3 +30,10 @@ export type TabDropdownProps = {
 	menuItems: MenuProps["items"];
 	menuClick: (menuInfo: any, tab: KeepAliveTab) => void;
 };
+
+export type TabAction = "replace" | "join";
+export interface TabActionParams {
+	tabTitle?: string;
+	tabAction?: TabAction;
+	[key: string]: any;
+}
