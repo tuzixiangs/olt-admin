@@ -8,7 +8,7 @@ import type { AppRouteObject } from "@/types/router";
 import { checkAny } from "@/utils";
 import { useMemo } from "react";
 
-const navData = GLOBAL_CONFIG.routerMode === "backend" ? backendDashboardRoutes : frontendDashboardRoutes;
+const navData = GLOBAL_CONFIG.routerMode === "backend" ? backendDashboardRoutes() : frontendDashboardRoutes;
 
 /**
  * 递归处理导航数据，过滤掉没有权限的项目
@@ -24,7 +24,7 @@ const filterItems = (items: AppRouteObject[], permissions: string[]) => {
 		}
 
 		// 检查当前项目是否有权限
-		const hasPermission = item?.meta?.auth ? checkAny(item.meta.auth, permissions) : true;
+		const hasPermission = item?.handle?.auth ? checkAny(item.handle.auth, permissions) : true;
 
 		// 如果有子项目，递归处理
 		if (item.children?.length) {
@@ -38,6 +38,36 @@ const filterItems = (items: AppRouteObject[], permissions: string[]) => {
 		}
 
 		return hasPermission;
+	});
+};
+
+/**
+ * 连接路径
+ * @param items 导航项目数组
+ * @param parentPath 父路径
+ * @returns 连接后的导航项目数组
+ */
+const prefixPaths = (routes: AppRouteObject[], parentPath = ""): AppRouteObject[] => {
+	return routes.map((route) => {
+		// 对于 index 路由或没有 path 的路由，直接返回
+		if (route.index || !route.path) {
+			return route;
+		}
+
+		// 拼接路径，并处理可能出现的多余斜杠
+		const currentAbsolutePath = [parentPath, route.path].join("/").replace(/\/+/g, "/");
+
+		const newRoute = {
+			...route,
+			path: currentAbsolutePath,
+		};
+
+		// 如果有子路由，递归处理
+		if (route.children) {
+			newRoute.children = prefixPaths(route.children, currentAbsolutePath);
+		}
+
+		return newRoute;
 	});
 };
 
@@ -58,8 +88,8 @@ const filterNavData = (permissions: string[]) => {
 			// 过滤组内的项目
 			const filteredItems = filterItems(group.children || [], permissions);
 
-			// 如果组内没有项目了，返回 null
-			if (filteredItems.length === 0 && group.meta?.groupKey) {
+			// 如果组内没有项目了并且是组且没有Component，返回 null
+			if (filteredItems.length === 0 && group.handle?.groupKey && !group.Component) {
 				return null;
 			}
 
@@ -80,7 +110,7 @@ function sort(data: AppRouteObject[]) {
 		}
 	}
 	return data.sort((a, b) => {
-		return (!a.meta?.groupKey && !a.order ? -1 : a.order || 0) - (!b.meta?.groupKey && !b.order ? -1 : b.order || 0);
+		return (a.order || 0) - (b.order || 0);
 	});
 }
 /**
@@ -94,16 +124,16 @@ const sortNavData = (navData: AppRouteObject[], isGroup: boolean) => {
 	// 根据 groupKey 分组，只支持首层分组
 	let groupedNavData: AppRouteObject[] = [];
 	for (const item of navData) {
-		const groupKey = item.meta?.groupKey;
+		const groupKey = item.handle?.groupKey;
 		if (groupKey) {
-			const group = groupedNavData.find((g) => g.meta?.groupKey === groupKey);
+			const group = groupedNavData.find((g) => g.handle?.groupKey === groupKey);
 			if (group) {
 				group.children?.push(item);
 			} else {
 				groupedNavData.push({
-					path: `/${groupKey}`,
+					path: `${groupKey}`,
 					order: GroupInfo[groupKey].order,
-					meta: {
+					handle: {
 						key: groupKey,
 						title: GroupInfo[groupKey].title,
 						groupKey,
@@ -129,7 +159,7 @@ export const useFilteredNavData = () => {
 	const permissions = useUserPermissions();
 	const permissionCodes = useMemo(() => permissions.map((p) => p.code), [permissions]);
 	const filteredNavData = useMemo(
-		() => sortNavData(filterNavData(permissionCodes), isGroup),
+		() => sortNavData(prefixPaths(filterNavData(permissionCodes)), isGroup),
 		[permissionCodes, isGroup],
 	);
 	return filteredNavData;

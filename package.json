@@ -5,9 +5,14 @@
 	"type": "module",
 	"scripts": {
 		"dev": "vite",
+		"dev:debug": "vite --debug",
 		"build": "tsc && vite build",
 		"preview": "vite preview",
-		"preinstall": "lefthook install"
+		"preinstall": "lefthook install",
+		"lint": "biome check .",
+		"lint:fix": "biome check . --write",
+		"format": "biome format --write .",
+		"type-check": "tsc --noEmit"
 	},
 	"dependencies": {
 		"@ant-design/cssinjs": "^1.22.0",
@@ -35,6 +40,7 @@
 		"@vanilla-extract/vite-plugin": "^5.0.7",
 		"@vercel/analytics": "^1.5.0",
 		"@vitejs/plugin-react": "^4.3.3",
+		"ahooks": "^3.9.0",
 		"antd": "^5.22.1",
 		"apexcharts": "^4.5.0",
 		"axios": "^1.7.7",
@@ -44,6 +50,7 @@
 		"color": "^4.2.3",
 		"date-fns": "^4.1.0",
 		"dayjs": "^1.11.13",
+		"deepmerge": "^4.3.1",
 		"highlight.js": "^11.10.0",
 		"i18next": "^23.16.5",
 		"i18next-browser-languagedetector": "^7.2.1",
@@ -101,14 +108,10 @@
 	},
 	"packageManager": "pnpm@10.13.1",
 	"msw": {
-		"workerDirectory": [
-			"public"
-		]
+		"workerDirectory": ["public"]
 	},
 	"commitlint": {
-		"extends": [
-			"@commitlint/config-conventional"
-		]
+		"extends": ["@commitlint/config-conventional"]
 	},
 	"volta": {
 		"node": "20.16.0",

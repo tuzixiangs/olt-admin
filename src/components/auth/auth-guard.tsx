@@ -56,10 +56,23 @@ interface AuthGuardProps {
  *   <AdminPanel />
  * </AuthGuard>
  */
-export const AuthGuard = ({ children, fallback = null, check, checkAny, checkAll, baseOn = "permission" }: AuthGuardProps) => {
+export const AuthGuard = ({
+	children,
+	fallback = null,
+	check,
+	checkAny,
+	checkAll,
+	baseOn = "permission",
+}: AuthGuardProps) => {
 	const checkFn = useAuthCheck(baseOn);
 
-	const hasAccess = check ? checkFn.check(check) : checkAny ? checkFn.checkAny(checkAny) : checkAll ? checkFn.checkAll(checkAll) : true;
+	const hasAccess = check
+		? checkFn.check(check)
+		: checkAny
+			? checkFn.checkAny(checkAny)
+			: checkAll
+				? checkFn.checkAll(checkAll)
+				: true;
 
 	return hasAccess ? <>{children}</> : <>{fallback}</>;
 };

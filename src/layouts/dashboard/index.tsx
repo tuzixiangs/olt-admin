@@ -22,7 +22,9 @@ function MobileLayout() {
 	return (
 		<>
 			{/* Sticky Header */}
-			<Header leftSlot={<NavMobileLayout data={navData} />} />
+			<div id="olt-layout-header-wrapper">
+				<Header leftSlot={<NavMobileLayout data={navData} />} />
+			</div>
 			<Main />
 		</>
 	);
@@ -42,7 +44,7 @@ function PcHorizontalLayout() {
 	return (
 		<>
 			{/* Sticky Header */}
-			<div className="sticky top-0 left-0 right-0 z-app-bar">
+			<div className="sticky top-0 left-0 right-0 z-app-bar" id="olt-layout-header-wrapper">
 				<Header
 					leftSlot={
 						<div className="flex items-center">
@@ -82,7 +84,7 @@ function PcVerticalLayout() {
 					paddingLeft: mainPaddingLeft,
 				}}
 			>
-				<div className="sticky top-0 left-0 right-0 z-app-bar">
+				<div className="sticky top-0 left-0 right-0 z-app-bar" id="olt-layout-header-wrapper">
 					<Header />
 					{/* Multi Tabs */}
 					{multiTab ? <MultiTabs /> : null}

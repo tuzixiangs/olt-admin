@@ -3,9 +3,9 @@ import SimpleLayout from "@/layouts/simple";
 import { Suspense, lazy } from "react";
 import { Outlet, type RouteObject } from "react-router";
 
-const Page403 = lazy(() => import("@/pages/sys/error/Page403"));
-const Page404 = lazy(() => import("@/pages/sys/error/Page404"));
-const Page500 = lazy(() => import("@/pages/sys/error/Page500"));
+const Page403 = lazy(() => import("@/pages/example/error/Page403"));
+const Page404 = lazy(() => import("@/pages/example/error/Page404"));
+const Page500 = lazy(() => import("@/pages/example/error/Page500"));
 
 export const mainRoutes: RouteObject[] = [
 	{

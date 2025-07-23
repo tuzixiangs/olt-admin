@@ -14,7 +14,7 @@ export default function Toast() {
 	return (
 		<ToasterStyleWrapper>
 			<Toaster
-				position="top-right"
+				position="top-center"
 				theme={themeMode}
 				toastOptions={{
 					duration: 3000,

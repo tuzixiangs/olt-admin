@@ -17,7 +17,14 @@ interface IconProps extends IconifyIconProps {
 	style?: CSSProperties;
 }
 
-export default function Icon({ icon, size = "1em", color = "currentColor", className = "", style = {}, ...props }: IconProps) {
+export default function Icon({
+	icon,
+	size = "1em",
+	color = "currentColor",
+	className = "",
+	style = {},
+	...props
+}: IconProps) {
 	// Handle URL SVG
 	if (icon.startsWith("url:")) {
 		const url = icon.replace("url:", "");

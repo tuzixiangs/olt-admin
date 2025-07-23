@@ -86,6 +86,6 @@ export type AppRouteObject = {
 	 * 默认值为 0
 	 */
 	order?: number;
-	meta?: RouteMeta;
+	handle?: RouteMeta;
 	children?: AppRouteObject[];
-} & Omit<RouteObject, "children">;
+} & Omit<RouteObject, "children" | "handle">;

@@ -93,7 +93,7 @@ export function TabItem({ tab, style, onClose }: TabItemProps) {
 		>
 			<div className="relative flex select-none items-center px-4 py-1" style={style}>
 				<div>{renderTabLabel(tab)}</div>
-				{!tab.meta?.hideTab && (
+				{!tab.handle?.hideTab && (
 					<Icon
 						icon="ion:close-outline"
 						size={18}

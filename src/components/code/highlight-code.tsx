@@ -18,7 +18,11 @@ export function HighlightCode({ code, options, className, withCopy = true }: Hig
 	const { themeMode } = useSettings();
 
 	return (
-		<div className={cn("w-full relative group", className)} onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}>
+		<div
+			className={cn("w-full relative group", className)}
+			onMouseEnter={() => setHovered(true)}
+			onMouseLeave={() => setHovered(false)}
+		>
 			{withCopy && hovered && (
 				<Button variant="outline" size="icon" className="absolute top-2 right-2 bg-accent" onClick={() => copyFn(code)}>
 					<Icon icon="eva:copy-fill" size={24} />

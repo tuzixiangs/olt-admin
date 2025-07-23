@@ -5,28 +5,28 @@ import { NavRootItem } from "./nav-root-item";
 import { NavSubItem } from "./nav-sub-item";
 
 export function NavList({ data, depth = 0 }: NavListProps) {
-	const children = data.children?.filter((item) => !item.meta?.hideMenu) || [];
+	const children = data.children?.filter((item) => !item.handle?.hideMenu) || [];
 	const hasChild = children && children.length > 0;
 	const location = useLocation();
 	const isActive = location.pathname.includes(data.path || "");
 
-	if (data.meta?.hideMenu) {
+	if (data.handle?.hideMenu) {
 		return null;
 	}
 
 	const renderRootNavItem = () => {
 		return (
 			<NavRootItem
-				key={data.meta?.key}
+				key={data.handle?.key}
 				// data
 				path={data.path}
-				title={data.meta?.title as string}
-				caption={data.meta?.caption}
-				info={data.meta?.info}
-				icon={data.meta?.icon}
-				auth={data.meta?.auth}
+				title={data.handle?.title as string}
+				caption={data.handle?.caption}
+				info={data.handle?.info}
+				icon={data.handle?.icon}
+				auth={data.handle?.auth}
 				// state
-				disabled={data.meta?.disabled}
+				disabled={data.handle?.disabled}
 				active={isActive}
 				// options
 				hasChild={hasChild}
@@ -38,16 +38,16 @@ export function NavList({ data, depth = 0 }: NavListProps) {
 	const renderSubNavItem = () => {
 		return (
 			<NavSubItem
-				key={data.meta?.key}
+				key={data.handle?.key}
 				// data
 				path={data.path}
-				title={data.meta?.title as string}
-				caption={data.meta?.caption}
-				info={data.meta?.info}
-				icon={data.meta?.icon}
-				auth={data.meta?.auth}
+				title={data.handle?.title as string}
+				caption={data.handle?.caption}
+				info={data.handle?.info}
+				icon={data.handle?.icon}
+				auth={data.handle?.auth}
 				// state
-				disabled={data.meta?.disabled}
+				disabled={data.handle?.disabled}
 				active={isActive}
 				// options
 				hasChild={hasChild}
@@ -64,7 +64,7 @@ export function NavList({ data, depth = 0 }: NavListProps) {
 				<HoverCardTrigger>{renderNavItem()}</HoverCardTrigger>
 				<HoverCardContent side="right" sideOffset={10} className="p-1">
 					{children.map((child) => (
-						<NavList key={child.meta?.key} data={child} depth={depth + 1} />
+						<NavList key={child.path} data={child} depth={depth + 1} />
 					))}
 				</HoverCardContent>
 			</HoverCard>

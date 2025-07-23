@@ -9,7 +9,7 @@ export function NavList({ data, depth = 1 }: NavListProps) {
 	const location = useLocation();
 	const isActive = location.pathname.includes(data.path || "");
 	const [open, setOpen] = useState(isActive);
-	const children = data.children?.filter((item) => !item.meta?.hideMenu) || [];
+	const children = data.children?.filter((item) => !item.handle?.hideMenu) || [];
 	const hasChild = children && children.length > 0;
 	const { accordion: accordionSetting } = useSettings();
 
@@ -25,7 +25,7 @@ export function NavList({ data, depth = 1 }: NavListProps) {
 		}
 	}, [accordionSetting, isActive]);
 
-	if (data.meta?.hideMenu) {
+	if (data.handle?.hideMenu) {
 		return null;
 	}
 
@@ -34,16 +34,16 @@ export function NavList({ data, depth = 1 }: NavListProps) {
 			<CollapsibleTrigger className="w-full">
 				<NavItem
 					// data
-					title={data.meta?.title as string}
+					title={data.handle?.title as string}
 					path={data.path || ""}
-					icon={data.meta?.icon}
-					info={data.meta?.info}
-					caption={data.meta?.caption}
-					auth={data.meta?.auth}
+					icon={data.handle?.icon}
+					info={data.handle?.info}
+					caption={data.handle?.caption}
+					auth={data.handle?.auth}
 					// state
 					open={open}
 					active={isActive}
-					disabled={data.meta?.disabled}
+					disabled={data.handle?.disabled}
 					// options
 					hasChild={hasChild}
 					depth={depth}
@@ -55,7 +55,7 @@ export function NavList({ data, depth = 1 }: NavListProps) {
 				<CollapsibleContent>
 					<div className="ml-4 mt-1 flex flex-col gap-1">
 						{children.map((child) => (
-							<NavList key={child.meta?.key} data={child} depth={depth + 1} />
+							<NavList key={child.path} data={child} depth={depth + 1} />
 						))}
 					</div>
 				</CollapsibleContent>

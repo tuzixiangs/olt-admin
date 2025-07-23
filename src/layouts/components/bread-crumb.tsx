@@ -23,7 +23,7 @@ interface BreadCrumbProps {
 
 type NavItem = Pick<NavItemDataProps, "path"> & {
 	children?: NavItem[];
-	meta?: RouteMeta;
+	handle?: RouteMeta;
 };
 
 interface BreadcrumbItemData {
@@ -39,7 +39,6 @@ export default function BreadCrumb({ maxItems = 3 }: BreadCrumbProps) {
 	const { t } = useLocale();
 	const matches = useMatches();
 	const navData = useFilteredNavData();
-
 	const findPathInNavData = useCallback((path: string, items: NavItem[]): NavItem[] => {
 		for (const item of items) {
 			if (item.path === path) {
@@ -59,21 +58,20 @@ export default function BreadCrumb({ maxItems = 3 }: BreadCrumbProps) {
 		const paths = matches.filter((item) => item.pathname !== "/").map((item) => item.pathname);
 		return paths
 			.map((path) => {
-				const navItems = navData.flatMap((section) => (section.meta?.groupKey ? section.children : section));
+				const navItems = navData.flatMap((section) => (section.handle?.groupKey ? section.children : section));
 				const pathItems = findPathInNavData(path, navItems as NavItem[]);
-
 				if (pathItems.length === 0) return null;
 
 				const currentItem = pathItems[pathItems.length - 1];
 				const children =
 					currentItem.children?.map((child) => ({
 						key: child.path,
-						label: t(child.meta?.title || ""),
+						label: t(child.handle?.title || ""),
 					})) ?? [];
 
 				return {
 					key: currentItem.path,
-					label: t(currentItem.meta?.title || ""),
+					label: t(currentItem.handle?.title || ""),
 					items: children,
 				};
 			})
@@ -160,5 +158,5 @@ export default function BreadCrumb({ maxItems = 3 }: BreadCrumbProps) {
 		);
 	};
 
-	return <Breadcrumb>{breadCrumbs.length > 1 && <BreadcrumbList>{renderBreadcrumbs()}</BreadcrumbList>}</Breadcrumb>;
+	return <Breadcrumb>{<BreadcrumbList>{renderBreadcrumbs()}</BreadcrumbList>}</Breadcrumb>;
 }

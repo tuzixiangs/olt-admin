@@ -10,7 +10,7 @@ const getRoutes = (): AppRouteObject[] => {
 	if (GLOBAL_CONFIG.routerMode === "frontend") {
 		return frontendDashboardRoutes;
 	}
-	return backendDashboardRoutes;
+	return backendDashboardRoutes();
 };
 
 export const dashboardRoutes: AppRouteObject[] = [

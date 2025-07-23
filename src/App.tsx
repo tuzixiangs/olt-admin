@@ -4,6 +4,7 @@ import { QueryClient } from "@tanstack/react-query";
 import { Analytics as VercelAnalytics } from "@vercel/analytics/react";
 import { Helmet, HelmetProvider } from "react-helmet-async";
 import { MotionLazy } from "./components/animate/motion-lazy";
+import { DialogManager } from "./components/dialog";
 import { RouteLoadingProgress } from "./components/loading";
 import Toast from "./components/toast";
 import { GLOBAL_CONFIG } from "./global-config";
@@ -39,6 +40,7 @@ function App({ children }: { children: React.ReactNode }) {
 					<MultiTabsProvider>
 						<MotionLazy>{children}</MotionLazy>
 					</MultiTabsProvider>
+					<DialogManager />
 				</ThemeProvider>
 			</QueryClientProvider>
 		</HelmetProvider>

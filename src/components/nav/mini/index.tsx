@@ -11,8 +11,8 @@ export const NavMini = ({ data, className, ...props }: NavProps) => {
 		<nav className={cn("flex flex-col", className)} {...props}>
 			<ul className="flex flex-col gap-1">
 				{data.map((item, index) =>
-					item.meta?.groupKey && groupSetting ? (
-						<NavGroup key={item.path || index} items={item.children?.filter((item) => !item.meta?.hideMenu) || []} />
+					item.handle?.groupKey && groupSetting ? (
+						<NavGroup key={item.path || index} items={item.children?.filter((item) => !item.handle?.hideMenu) || []} />
 					) : (
 						<ul key={item.path || index} className="flex w-full flex-col gap-1">
 							<NavList key={item.path || index} data={item} depth={1} />

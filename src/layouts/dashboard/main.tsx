@@ -1,7 +1,7 @@
 import { AuthGuard } from "@/components/auth/auth-guard";
 import { LineLoading } from "@/components/loading";
 import { GLOBAL_CONFIG } from "@/global-config";
-import Page403 from "@/pages/sys/error/Page403";
+import Page403 from "@/pages/example/error/Page403";
 import { backendDashboardRoutes } from "@/routes/sections/dashboard/backend";
 import { frontendDashboardRoutes } from "@/routes/sections/dashboard/frontend";
 import { useSettings } from "@/store/settingStore";
@@ -18,7 +18,7 @@ function getRoutes(): AppRouteObject[] {
 	if (GLOBAL_CONFIG.routerMode === "frontend") {
 		return clone(frontendDashboardRoutes);
 	}
-	return clone(backendDashboardRoutes);
+	return clone(backendDashboardRoutes());
 }
 
 /**
@@ -47,6 +47,7 @@ const Main = () => {
 		<AuthGuard checkAny={currentNavAuth} fallback={<Page403 />}>
 			<main
 				data-slot="olt-layout-main"
+				id="olt-layout-main"
 				className={cn(
 					"flex-auto w-full flex flex-col",
 					"transition-[max-width] duration-300 ease-in-out",

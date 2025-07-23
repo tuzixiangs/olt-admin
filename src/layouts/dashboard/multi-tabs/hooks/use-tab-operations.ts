@@ -20,7 +20,9 @@ export function useTabOperations(
 			if (deleteTabIndex === -1) return;
 
 			if (deleteTabIndex > 0) {
-				push(tempTabs[deleteTabIndex - 1].path || "/");
+				if (tempTabs[deleteTabIndex].path === activeTabRoutePath) {
+					push(tempTabs[deleteTabIndex - 1].path || "/");
+				}
 			} else {
 				push(tempTabs[deleteTabIndex + 1].path || "/");
 			}
@@ -75,9 +77,9 @@ export function useTabOperations(
 				if (index >= 0) {
 					newTabs[index] = {
 						...newTabs[index],
-						meta: {
-							...newTabs[index].meta,
-							title: newTabs[index].meta?.title || "",
+						handle: {
+							...newTabs[index].handle,
+							title: newTabs[index].handle?.title || "",
 							timeStamp: new Date().getTime().toString(),
 						},
 					};

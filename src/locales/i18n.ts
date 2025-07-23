@@ -20,7 +20,7 @@ i18n
 	// init i18next
 	// for all options read: https://www.i18next.com/overview/configuration-options
 	.init({
-		debug: true,
+		debug: false,
 		lng: defaultLng, // localstorage -> i18nextLng: en_US
 		fallbackLng: LocalEnum.en_US,
 		interpolation: {
@@ -33,4 +33,6 @@ i18n
 	});
 
 export const { t } = i18n;
+/** 无任何实际意义，只是为了配合 i18n ally */
+export const $t = (key: string) => key;
 export default i18n;

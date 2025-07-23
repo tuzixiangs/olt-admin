@@ -77,9 +77,9 @@ export default function MultiTabs() {
 				activeKey={activeTabRoutePath}
 				items={tabs.map((tab) => ({
 					...tab,
-					label: tab.meta?.title || "",
+					label: tab.handle?.title || "",
 					key: tab.path || "/",
-					children: <div key={tab.meta?.timeStamp}>{tab.meta?.outlet}</div>,
+					children: <div key={tab.handle?.timeStamp}>{tab.handle?.outlet}</div>,
 				}))}
 				renderTabBar={() => {
 					return (

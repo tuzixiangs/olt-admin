@@ -50,10 +50,10 @@ const SearchBar = () => {
 		const items: SearchItem[] = [];
 		const flattenItems = (navItems: typeof navData) => {
 			for (const section of navItems) {
-				if (section.path && !section.meta?.groupKey) {
+				if (section.path && !section.handle?.groupKey) {
 					items.push({
 						key: section.path || "",
-						label: section.meta?.title || "",
+						label: section.handle?.title || "",
 						path: section.path || "",
 					});
 				}

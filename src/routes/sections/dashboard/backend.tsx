@@ -91,4 +91,4 @@ const convertToRoute = (items: MenuTree[], parent?: MenuTree): AppRouteObject[] 
 	return routes;
 };
 
-export const backendDashboardRoutes = convertToRoute(convertFlatToTree(DB_MENU));
+export const backendDashboardRoutes = () => convertToRoute(convertFlatToTree(DB_MENU));

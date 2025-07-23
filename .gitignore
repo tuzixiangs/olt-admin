@@ -21,8 +21,6 @@ dist-ssr
 *.sln
 *.sw?
 
-# env
-.env
 
 # vite build stats
 stats.html

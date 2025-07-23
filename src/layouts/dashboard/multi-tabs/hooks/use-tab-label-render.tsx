@@ -9,8 +9,8 @@ export function useTabLabelRender() {
 	const specialTabRenderMap = useMemo<Record<string, (tab: KeepAliveTab) => React.ReactNode>>(
 		() => ({
 			"sys.nav.system.user_detail": (tab: KeepAliveTab) => {
-				const userId = tab.meta?.params?.id;
-				const defaultLabel = t(tab.meta?.title || "");
+				const userId = tab.handle?.params?.id;
+				const defaultLabel = t(tab.handle?.title || "");
 				if (userId) {
 					const user = USER_LIST.find((item) => item.id === userId);
 					return `${user?.username}-${defaultLabel}`;
@@ -22,11 +22,11 @@ export function useTabLabelRender() {
 	);
 
 	const renderTabLabel = (tab: KeepAliveTab) => {
-		const specialRender = specialTabRenderMap[tab.meta?.title || ""];
+		const specialRender = specialTabRenderMap[tab.handle?.title || ""];
 		if (specialRender) {
 			return specialRender(tab);
 		}
-		return t(tab.meta?.title || "");
+		return t(tab.handle?.title || "");
 	};
 
 	return renderTabLabel;
