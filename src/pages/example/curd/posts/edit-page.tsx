@@ -51,7 +51,7 @@ export const loader = async ({ params }: LoaderFunctionArgs): Promise<TabActionP
 	}
 	const editData = await getPost(id);
 	// 利用 loader 中的 tabTitle 和 tabAction 动态更新 tab 的 title
-	return { editData, tabTitle: editData.title, tabAction: "join" };
+	return { editData, tabTitle: editData?.title || "", tabAction: "join" };
 };
 
 /**

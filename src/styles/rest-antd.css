@@ -9,3 +9,43 @@
     padding-inline: 0px;
   }
 }
+
+/* button */
+.ant-btn-color-default.ant-btn-variant-dashed:hover,
+.ant-btn-color-default.ant-btn-variant-outlined:hover {
+  background: var(--colors-palette-gray-200) !important;
+}
+
+.ant-btn-color-default.ant-btn-variant-dashed:active,
+.ant-btn-color-default.ant-btn-variant-outlined:active {
+  background: var(--colors-palette-gray-200) !important;
+}
+
+.ant-btn-variant-dashed:disabled {
+  border-color: var(--colors-palette-gray-400) !important;
+}
+
+.ant-btn-variant-outlined:disabled {
+  border-color: var(--colors-palette-gray-300) !important;
+}
+
+.ant-btn-color-default.ant-btn-variant-filled {
+  background: var(--colors-palette-gray-300) !important;
+}
+
+.ant-btn-color-default.ant-btn-variant-filled:hover {
+  background: var(--colors-palette-gray-400) !important;
+}
+
+.ant-btn-color-default.ant-btn-variant-filled:active {
+  background: var(--colors-palette-gray-500) !important;
+}
+
+.ant-btn-color-default.ant-btn-variant-filled:disabled {
+  background: var(--colors-palette-gray-200) !important;
+}
+
+.ant-input-outlined,
+.ant-select-selector {
+  box-shadow: none !important;
+}

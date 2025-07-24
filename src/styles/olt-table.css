@@ -1,5 +1,8 @@
+/* 导入列设置样式 */
+
+
 .olt-table-stripe:nth-child(odd) {
-	background-color: #fafafa;
+	background-color: var(--colors-background-stripe);
 }
 .olt-table-row-clickable {
 	cursor: pointer;

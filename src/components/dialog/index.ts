@@ -10,6 +10,7 @@ export { useDialog, dialog, globalDialog } from "./hooks/use-dialog";
 
 // 导出组件
 export { default as DialogManager } from "./manager";
+export { useModalContext } from "./modal-context";
 
 // 导出表单组件
 // export { FormDialog } from "./form-dialog";

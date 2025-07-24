@@ -8,6 +8,11 @@ import { NavItem } from "./nav-item";
 export function NavList({ data, depth = 1 }: NavListProps) {
 	const location = useLocation();
 	const isActive = location.pathname.includes(data.path || "");
+	// 根据children 判断是否最后一级路由
+	// if ((!data.children || data.children.length === 0) && !data.handle?.hideMenu) {
+	// 	isActive = location.pathname === data.path;
+	// }
+
 	const [open, setOpen] = useState(isActive);
 	const children = data.children?.filter((item) => !item.handle?.hideMenu) || [];
 	const hasChild = children && children.length > 0;

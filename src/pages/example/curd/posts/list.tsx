@@ -35,7 +35,7 @@ const PostList: React.FC = () => {
 	// 编辑弹窗管理
 	const editModal = useModal({
 		defaultConfig: {
-			type: "drawer",
+			type: "modal",
 			title: "编辑文章",
 			width: 600,
 			destroyOnClose: true,

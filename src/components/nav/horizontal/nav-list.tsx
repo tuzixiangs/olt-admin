@@ -8,6 +8,9 @@ export function NavList({ data, depth = 0 }: NavListProps) {
 	const hasChild = children && children.length > 0;
 	const location = useLocation();
 	const isActive = location.pathname.includes(data.path || "");
+	// if ((!data.children || data.children.length === 0) && !data.handle?.hideMenu) {
+	// 	isActive = location.pathname === data.path;
+	// }
 
 	if (data.handle?.hideMenu) {
 		return null;

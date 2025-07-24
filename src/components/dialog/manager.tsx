@@ -2,6 +2,8 @@ import useLocale from "@/locales/use-locale";
 import { Drawer, Modal } from "antd";
 import { useDialogStore } from "./store";
 import type { DialogInstance } from "./types";
+import { ModalProvider, useModalContext } from "./modal-context";
+import { dialog } from "./hooks/use-dialog";
 
 /**
  * 弹窗实例渲染器
@@ -122,8 +124,14 @@ function DialogRenderer({ dialog }: { dialog: DialogInstance }) {
  * 弹窗管理器组件
  * 负责渲染所有活跃的弹窗实例
  */
-export function DialogManager() {
+function DialogManagerContent() {
 	const dialogs = useDialogStore((state) => state.dialogs);
+	const modal = useModalContext();
+	
+	// 设置modal实例到全局dialog对象中
+	if (modal && dialog._setModalInstance) {
+		dialog._setModalInstance(modal);
+	}
 
 	return (
 		<>
@@ -131,6 +139,14 @@ export function DialogManager() {
 				<DialogRenderer key={dialog.id} dialog={dialog} />
 			))}
 		</>
+	);
+}
+
+export function DialogManager() {
+	return (
+		<ModalProvider>
+			<DialogManagerContent />
+		</ModalProvider>
 	);
 }
 

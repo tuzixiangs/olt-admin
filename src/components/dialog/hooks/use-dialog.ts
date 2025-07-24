@@ -1,3 +1,4 @@
+import type { App } from "antd";
 import { Modal } from "antd";
 import { useCallback } from "react";
 import { dialogActions, useDialogStore } from "../store";
@@ -59,7 +60,20 @@ export function useDialog(): UseDialogReturn {
  * 创建全局弹窗管理器函数
  */
 function createGlobalDialog() {
+	// 存储modal实例的变量
+	let modalInstance: ReturnType<typeof App.useApp> | null = null;
+
+	// 设置modal实例的方法
+	const setModalInstance = (instance: ReturnType<typeof App.useApp>) => {
+		modalInstance = instance;
+	};
+
 	return {
+		/**
+		 * 设置modal实例（仅供内部使用）
+		 */
+		_setModalInstance: setModalInstance,
+
 		/**
 		 * 打开弹窗
 		 */
@@ -102,8 +116,11 @@ function createGlobalDialog() {
 			return new Promise((resolve) => {
 				const { type = "confirm" } = config;
 
+				// 优先使用context中的modal实例，否则使用全局Modal
+				const modal = modalInstance?.modal || Modal;
+
 				if (type === "confirm") {
-					Modal.confirm({
+					modal.confirm({
 						title: config.title,
 						content: config.content,
 						okText: config.okText,
@@ -124,7 +141,7 @@ function createGlobalDialog() {
 					});
 				} else {
 					// 其他类型的确认框
-					const modalMethod = Modal[type];
+					const modalMethod = modal[type];
 					if (modalMethod) {
 						modalMethod({
 							title: config.title,

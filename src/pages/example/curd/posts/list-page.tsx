@@ -7,7 +7,7 @@ import { Button, Tag } from "antd";
 import type React from "react";
 
 import { useRouter } from "@/routes/hooks";
-// import { Tooltip } from "antd";
+import { Tooltip } from "antd";
 import { toast } from "sonner";
 import { statusOptions } from "../dict";
 import { deletePost, getPosts, queryKeys } from "./api";
@@ -35,12 +35,12 @@ const PostList: React.FC = () => {
 
 	// 显示详情
 	const showDetail = (record: IPost) => {
-		push(`/curd/testRouter/detail/${record.id}`);
+		push(`/curd/pagePosts/detail/${record.id}`);
 	};
 
 	// 显示编辑表单
 	const showEditForm = (record?: IPost) => {
-		push(`/curd/testRouter/edit/${record?.id}`);
+		push(`/curd/pagePosts/edit/${record?.id}`);
 	};
 
 	// 删除确认
@@ -68,14 +68,14 @@ const PostList: React.FC = () => {
 			title: "标题",
 			dataIndex: "title",
 			// copyable: true, // 不要使用 copyable 属性，有性能问题[https://github.com/ant-design/ant-design/issues?q=copyable]
-			ellipsis: true, // ellipsis 属性似乎也有性能问题 [https://github.com/ant-design/ant-design/issues/54411]
-			// render: (_, record) => (
-			// 	<Tooltip title={record.title}>
-			// 		<div style={{ width: "100%", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-			// 			{record.title}
-			// 		</div>
-			// 	</Tooltip>
-			// ),
+			// ellipsis: true, // ellipsis 属性似乎也有性能问题 [https://github.com/ant-design/ant-design/issues/54411]
+			render: (_, record) => (
+				<Tooltip title={record.title}>
+					<div style={{ width: "100%", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+						{record.title}
+					</div>
+				</Tooltip>
+			),
 			width: 400,
 		},
 		{
@@ -125,7 +125,7 @@ const PostList: React.FC = () => {
 						size="small"
 						onClick={(e) => {
 							e.stopPropagation();
-							push(`/curd/testRouter/hiddenTabDetail/${record.id}`);
+							push(`/curd/pagePosts/hiddenTabDetail/${record.id}`);
 						}}
 					>
 						详情
@@ -154,7 +154,7 @@ const PostList: React.FC = () => {
 			rowKey="id"
 			autoHeight={true}
 			toolBarRender={() => [
-				<Button type="primary" key="add" onClick={() => push("/curd/testRouter/create")}>
+				<Button type="primary" key="add" onClick={() => push("/curd/pagePosts/create")}>
 					新增文章
 				</Button>,
 			]}

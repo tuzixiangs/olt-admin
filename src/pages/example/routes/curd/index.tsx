@@ -1,6 +1,7 @@
 import { $t } from "@/locales/i18n";
 import type { AppRouteObject } from "@/types/router";
 import { postsRoutes } from "./posts.routes";
+import { uiRoutes } from "./ui.routes";
 
 const curdRoutes: AppRouteObject[] = [
 	{
@@ -10,7 +11,7 @@ const curdRoutes: AppRouteObject[] = [
 			title: $t("curd示例"),
 			groupKey: "pages",
 		},
-		children: [...postsRoutes],
+		children: [...postsRoutes, ...uiRoutes],
 	},
 ];
 

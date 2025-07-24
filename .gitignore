@@ -24,3 +24,9 @@ dist-ssr
 
 # vite build stats
 stats.html
+
+# idea
+.idea
+.trae
+.vercel
+.lingma
