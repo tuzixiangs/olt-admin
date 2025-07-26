@@ -21,21 +21,17 @@ export interface ColumnConfig {
 	/** 固定位置 */
 	fixed?: "left" | "right";
 	/** 原始列配置 */
-	originalColumn?: ProColumns;
+	originalColumn: ProColumns;
 }
 
 /**
  * 列设置组件属性
  */
 export interface ColumnSettingProps {
-	/** 是否可见 */
-	visible: boolean;
 	/** 原始列配置 */
 	columns: ProColumns[];
 	/** 列配置变更回调 */
 	onColumnsChange: (columns: ProColumns[]) => void;
-	/** 关闭回调 */
-	onClose: () => void;
 	/** 默认锁定的列key */
 	defaultLockedColumns?: string[];
 	/** 是否启用持久化存储 */
@@ -68,10 +64,6 @@ export interface AddFieldFormData {
 export interface DragableItemProps {
 	/** 列配置 */
 	config: ColumnConfig;
-	/** 索引 */
-	index: number;
-	/** 移动回调 */
-	onMove: (dragIndex: number, hoverIndex: number) => void;
 	/** 可见性切换回调 */
 	onToggleVisible: (key: string) => void;
 	/** 删除回调 */

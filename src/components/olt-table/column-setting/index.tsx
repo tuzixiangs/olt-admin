@@ -1,37 +1,59 @@
 import { Icon } from "@/components/icon";
 import type { ProColumns } from "@ant-design/pro-components";
-import { Button, Drawer, Empty, Input, Space, message } from "antd";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import {
+	DndContext,
+	type DragEndEvent,
+	KeyboardSensor,
+	PointerSensor,
+	closestCenter,
+	useSensor,
+	useSensors,
+} from "@dnd-kit/core";
+import {
+	SortableContext,
+	arrayMove,
+	sortableKeyboardCoordinates,
+	verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { useDebounceFn } from "ahooks";
+import { Button, Empty, Popover, Tooltip, message } from "antd";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import AddFieldDialog from "./add-field-dialog";
-import DragableItem from "./dragable-item";
+import SortableItem from "./dragable-item";
 import type { AddFieldFormData, ColumnConfig, ColumnSettingProps } from "./types";
 
 const ColumnSetting = ({
-	visible,
 	columns,
 	onColumnsChange,
-	onClose,
 	defaultLockedColumns = [],
 	enableStorage = false,
 	storageKey = "olt-table-column-config",
 }: ColumnSettingProps) => {
 	const [configs, setConfigs] = useState<ColumnConfig[]>([]);
-	const [searchText, setSearchText] = useState("");
 	const [addFieldVisible, setAddFieldVisible] = useState(false);
 	const [originalConfigs, setOriginalConfigs] = useState<ColumnConfig[]>([]);
+	const [open, setOpen] = useState(false);
+	const prevColumnsRef = useRef<ProColumns[]>([]);
+
+	const sensors = useSensors(
+		useSensor(PointerSensor),
+		useSensor(KeyboardSensor, {
+			coordinateGetter: sortableKeyboardCoordinates,
+		}),
+	);
 
 	// 将 ProColumns 转换为 ColumnConfig
 	const convertColumnsToConfigs = useCallback(
 		(cols: ProColumns[]): ColumnConfig[] => {
 			return cols.map((col, index) => ({
 				key: col.key?.toString() || col.dataIndex?.toString() || `column-${index}`,
-				title: col.title?.toString() || "未命名",
+				title: col.title?.toString() || "",
 				dataIndex: col.dataIndex?.toString() || "",
 				visible: !col.hideInTable,
 				locked: defaultLockedColumns.includes(col.key?.toString() || col.dataIndex?.toString() || ""),
 				sortIndex: index,
 				width: col.width as number,
-				fixed: col.fixed,
+				fixed: col.fixed as "left" | "right" | undefined,
 				originalColumn: col,
 			}));
 		},
@@ -80,8 +102,13 @@ const ColumnSetting = ({
 
 	// 初始化配置
 	useEffect(() => {
-		if (!visible || !columns.length) return;
+		if (!columns.length) return;
 
+		// 检查 columns 是否发生变化
+		const isColumnsChanged = JSON.stringify(columns) !== JSON.stringify(prevColumnsRef.current);
+		if (!isColumnsChanged && configs.length > 0) return;
+
+		prevColumnsRef.current = columns;
 		const newConfigs = convertColumnsToConfigs(columns);
 
 		// 尝试从存储中恢复配置
@@ -98,45 +125,49 @@ const ColumnSetting = ({
 			setConfigs(newConfigs);
 			setOriginalConfigs(newConfigs);
 		}
-	}, [visible, columns, convertColumnsToConfigs, loadStoredConfig]);
+	}, [columns, convertColumnsToConfigs, loadStoredConfig, configs.length]);
 
-	// 过滤后的配置
-	const filteredConfigs = useMemo(() => {
-		if (!searchText) return configs;
-		return configs.filter(
-			(config) =>
-				config.title.toLowerCase().includes(searchText.toLowerCase()) ||
-				config.dataIndex.toLowerCase().includes(searchText.toLowerCase()),
-		);
-	}, [configs, searchText]);
+	// 防抖应用配置
+	const { run: debouncedApply } = useDebounceFn(
+		() => {
+			const newColumns = convertConfigsToColumns(configs);
+			onColumnsChange(newColumns);
+			saveConfigToStorage(configs);
+		},
+		{
+			wait: 200,
+		},
+	);
 
-	// 移动列
-	const handleMove = useCallback((dragIndex: number, hoverIndex: number) => {
-		setConfigs((prev) => {
-			const newConfigs = [...prev];
-			const dragConfig = newConfigs[dragIndex];
-			const hoverConfig = newConfigs[hoverIndex];
+	// 处理拖拽结束事件
+	const handleDragEnd = useCallback((event: DragEndEvent) => {
+		const { active, over } = event;
 
-			// 如果目标位置是锁定列，则不允许移动
-			if (hoverConfig.locked) return prev;
+		if (over && active.id !== over.id) {
+			setConfigs((prev) => {
+				const activeIndex = prev.findIndex((item) => item.key === active.id);
+				const overIndex = prev.findIndex((item) => item.key === over.id);
 
-			// 执行移动
-			newConfigs.splice(dragIndex, 1);
-			newConfigs.splice(hoverIndex, 0, dragConfig);
+				// 如果目标位置是锁定列，则不允许移动
+				if (prev[overIndex].locked) return prev;
 
-			// 重新计算 sortIndex
-			const updatedConfigs = newConfigs.map((config, index) => ({
-				...config,
-				sortIndex: index,
-			}));
+				const newConfigs = arrayMove(prev, activeIndex, overIndex);
 
-			return updatedConfigs;
-		});
+				// 重新计算 sortIndex
+				return newConfigs.map((config, index) => ({
+					...config,
+					sortIndex: index,
+				}));
+			});
+		}
 	}, []);
 
 	// 切换可见性
 	const handleToggleVisible = useCallback((key: string) => {
-		setConfigs((prev) => prev.map((config) => (config.key === key ? { ...config, visible: !config.visible } : config)));
+		setConfigs((prev) => {
+			const newConfigs = prev.map((config) => (config.key === key ? { ...config, visible: !config.visible } : config));
+			return newConfigs;
+		});
 	}, []);
 
 	// 删除字段
@@ -183,94 +214,89 @@ const ColumnSetting = ({
 		message.success("配置已重置");
 	}, [originalConfigs, enableStorage, storageKey]);
 
-	// 应用配置
-	const handleApply = useCallback(() => {
-		const newColumns = convertConfigsToColumns(configs);
-		onColumnsChange(newColumns);
-		saveConfigToStorage(configs);
-		message.success("列配置已应用");
-		onClose();
-	}, [configs, convertConfigsToColumns, onColumnsChange, saveConfigToStorage, onClose]);
+	// 监听 configs 变化并防抖应用
+	useEffect(() => {
+		if (configs.length > 0) {
+			debouncedApply();
+		}
+	}, [configs, debouncedApply]);
 
 	// 获取已存在的字段key列表
 	const existingKeys = useMemo(() => configs.map((config) => config.key), [configs]);
 
 	return (
 		<>
-			<Drawer
-				title={
-					<div className="flex items-center gap-2">
-						<Icon icon="material-symbols:view-column" className="text-blue-500" />
-						<span>字段配置</span>
-					</div>
-				}
-				placement="right"
-				width={480}
-				open={visible}
-				onClose={onClose}
-				footer={
-					<div className="flex justify-between">
-						<Button onClick={handleReset} icon={<Icon icon="material-symbols:refresh" />}>
-							重置
-						</Button>
-						<Space>
-							<Button onClick={onClose}>取消</Button>
-							<Button type="primary" onClick={handleApply}>
-								应用
-							</Button>
-						</Space>
-					</div>
-				}
-			>
-				<div className="flex flex-col h-full">
-					{/* 操作栏 */}
-					<div className="flex flex-col gap-3 pb-4 border-b border-gray-200">
-						<Input
-							placeholder="搜索字段..."
-							prefix={<Icon icon="material-symbols:search" className="text-gray-400" />}
-							value={searchText}
-							onChange={(e) => setSearchText(e.target.value)}
-							allowClear
-						/>
-
-						<Button
-							type="dashed"
-							block
-							icon={<Icon icon="material-symbols:add" />}
-							onClick={() => setAddFieldVisible(true)}
-						>
-							新增字段
-						</Button>
-					</div>
-
-					{/* 字段列表 */}
-					<div className="flex-1 overflow-hidden">
-						<div className="h-full overflow-y-auto py-4">
-							{filteredConfigs.length > 0 ? (
-								<div className="space-y-3">
-									{filteredConfigs.map((config, index) => (
-										<DragableItem
-											key={config.key}
-											config={config}
-											index={configs.indexOf(config)}
-											onMove={handleMove}
-											onToggleVisible={handleToggleVisible}
-											onDelete={config.locked ? undefined : handleDelete}
-										/>
-									))}
+			<Popover
+				placement="bottomLeft"
+				style={{
+					padding: 0,
+				}}
+				arrow={false}
+				content={
+					<div className="w-80 p-2">
+						<div className="flex flex-col h-full">
+							{/* 标题栏 */}
+							<div className="flex items-center justify-between mb-3">
+								<div className="flex items-center gap-2">
+									<span className="font-medium">字段配置</span>
 								</div>
-							) : (
-								<Empty description="暂无字段" image={Empty.PRESENTED_IMAGE_SIMPLE} />
-							)}
+								<div className="flex gap-1">
+									<Button
+										type="text"
+										size="small"
+										onClick={() => {
+											setAddFieldVisible(true);
+										}}
+										icon={<Icon icon="material-symbols:add" />}
+									/>
+									<Button
+										type="text"
+										size="small"
+										onClick={handleReset}
+										icon={<Icon icon="material-symbols:refresh" />}
+									/>
+								</div>
+							</div>
+
+							{/* 字段列表 */}
+							<div className="flex-1 overflow-hidden">
+								<div className="h-full py-1">
+									{configs.length > 0 ? (
+										<DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+											<SortableContext
+												items={configs.map((config) => config.key)}
+												strategy={verticalListSortingStrategy}
+											>
+												<div className="space-y-2">
+													{configs.map((config) => (
+														<SortableItem
+															key={config.key}
+															config={config}
+															onToggleVisible={handleToggleVisible}
+															onDelete={config.locked ? undefined : handleDelete}
+														/>
+													))}
+												</div>
+											</SortableContext>
+										</DndContext>
+									) : (
+										<Empty description="暂无字段" image={Empty.PRESENTED_IMAGE_SIMPLE} />
+									)}
+								</div>
+							</div>
 						</div>
 					</div>
-
-					{/* 统计信息 */}
-					<div className="pt-4 border-t border-gray-200 text-sm text-gray-500">
-						共 {configs.length} 个字段，显示 {configs.filter((c) => c.visible).length} 个
+				}
+				trigger="click"
+				open={open}
+				onOpenChange={setOpen}
+			>
+				<Tooltip title="列设置">
+					<div className="hover:text-blue-700 cursor-pointer">
+						<Icon icon="ant-design:setting-outlined" size={20} />
 					</div>
-				</div>
-			</Drawer>
+				</Tooltip>
+			</Popover>
 
 			{/* 新增字段对话框 */}
 			<AddFieldDialog

@@ -1,4 +1,3 @@
-import { Icon } from "@/components/icon";
 import { useTableScroll } from "@/hooks/use-table-scroll";
 import {
 	type ActionType,
@@ -7,7 +6,6 @@ import {
 	ProTable,
 	type ProTableProps,
 } from "@ant-design/pro-components";
-import { Button } from "antd";
 // import { useSize } from "ahooks";
 import { useRef, useState } from "react";
 import ColumnSetting from "./column-setting";
@@ -62,28 +60,12 @@ const OltTable = <T extends Record<string, any> = any, Params extends ParamsType
 	// const tableContainerRef = useRef<HTMLDivElement>(null);
 	const staticRef = useRef<HTMLDivElement>(null);
 
-	// 列设置相关状态
-	const [columns, setColumns] = useState<ProColumns[]>(tableProps.columns || []);
-	const [columnSettingVisible, setColumnSettingVisible] = useState(false);
-
 	// 根据 autoHeight 决定使用哪个 ref 和 scroll
 	const containerRef = autoHeight ? tableContainerRef : staticRef;
 	const scrollConfig = autoHeight ? scroll : undefined;
 
 	// 生成默认存储键名
 	const defaultStorageKey = columnStorageKey || `olt-table-${window.location.pathname}`;
-
-	// 列设置按钮
-	const columnSettingButton = enableColumnSetting ? (
-		<Button
-			key="column-setting"
-			icon={<Icon icon="material-symbols:view-column" />}
-			onClick={() => setColumnSettingVisible(true)}
-			title="列设置"
-		>
-			列设置
-		</Button>
-	) : null;
 
 	// 合并工具栏按钮
 	const mergedToolBarRender = (
@@ -93,8 +75,23 @@ const OltTable = <T extends Record<string, any> = any, Params extends ParamsType
 		const originalToolbar = tableProps.toolBarRender ? tableProps.toolBarRender(action, rows) : [];
 		const toolbarItems = Array.isArray(originalToolbar) ? originalToolbar : [originalToolbar];
 
+		// 列设置按钮
+		const columnSettingButton = enableColumnSetting ? (
+			<ColumnSetting
+				key="column-setting"
+				columns={tableProps.columns || []}
+				onColumnsChange={setColumns}
+				defaultLockedColumns={defaultLockedColumns}
+				enableStorage={enableColumnStorage}
+				storageKey={defaultStorageKey}
+			/>
+		) : null;
+
 		return enableColumnSetting ? [...toolbarItems, columnSettingButton] : toolbarItems;
 	};
+
+	// 列设置相关状态
+	const [columns, setColumns] = useState<ProColumns[]>(tableProps.columns || []);
 
 	// const tableContainerRef = useRef<HTMLDivElement>(null);
 
@@ -104,34 +101,19 @@ const OltTable = <T extends Record<string, any> = any, Params extends ParamsType
 	// style={{ height: "calc(100vh - 220px)", overflow: "hidden" }}
 
 	return (
-		<>
-			<div ref={containerRef} className="page-container">
-				<ProTable<T, Params>
-					{...tableProps}
-					columns={columns}
-					className={`${tableProps.className || ""} olt-table`}
-					scroll={scrollConfig || tableProps.scroll}
-					toolBarRender={(action, rows) => mergedToolBarRender(action, rows)}
-					// scroll={{ x: "max-content", y: height }}
-					rowClassName={`${stripe ? "olt-table-stripe" : ""} ${rowClickable ? "olt-table-row-clickable" : ""} ${
-						tableProps.rowClassName || ""
-					}`}
-				/>
-			</div>
-
-			{/* 列设置组件 */}
-			{enableColumnSetting && (
-				<ColumnSetting
-					visible={columnSettingVisible}
-					columns={tableProps.columns || []}
-					onColumnsChange={setColumns}
-					onClose={() => setColumnSettingVisible(false)}
-					defaultLockedColumns={defaultLockedColumns}
-					enableStorage={enableColumnStorage}
-					storageKey={defaultStorageKey}
-				/>
-			)}
-		</>
+		<div ref={containerRef} className="page-container">
+			<ProTable<T, Params>
+				{...tableProps}
+				columns={columns}
+				className={`${tableProps.className || ""} olt-table`}
+				scroll={scrollConfig || tableProps.scroll}
+				toolBarRender={(action, rows) => mergedToolBarRender(action, rows)}
+				// scroll={{ x: "max-content", y: height }}
+				rowClassName={`${stripe ? "olt-table-stripe" : ""} ${rowClickable ? "olt-table-row-clickable" : ""} ${
+					tableProps.rowClassName || ""
+				}`}
+			/>
+		</div>
 	);
 };
 

@@ -7,3 +7,8 @@
 .olt-table-row-clickable {
 	cursor: pointer;
 }
+.olt-table-column-setting-popover {
+  .ant-popover-inner-content {
+    padding: 0;
+  }
+}
