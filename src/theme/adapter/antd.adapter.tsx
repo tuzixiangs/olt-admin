@@ -64,6 +64,12 @@ export const AntdAdapter: UILibraryAdapter = ({ mode, children }) => {
 		borderRadiusSM: removePx(baseThemeTokens.borderRadius.sm), // 小圆角
 		borderRadius: removePx(baseThemeTokens.borderRadius.default), // 默认圆角
 		borderRadiusLG: removePx(baseThemeTokens.borderRadius.lg), // 大圆角
+
+		// border
+		colorTextPlaceholder: colorTokens.text.disabled,
+		colorBorder: colorTokens.palette.gray[400],
+		colorTextDisabled: colorTokens.text.textDisabled,
+		colorBgContainerDisabled: colorTokens.palette.gray[200],
 	};
 
 	/**
@@ -90,29 +96,64 @@ export const AntdAdapter: UILibraryAdapter = ({ mode, children }) => {
 			colorLinkHover: colorTokens.palette.link.hover,
 			colorLinkActive: colorTokens.palette.link.click,
 		},
+		Tree: {
+			nodeSelectedBg: colorTokens.palette.link.light2,
+			colorPrimary: colorTokens.palette.link.default,
+			colorPrimaryHover: colorTokens.palette.link.hover,
+		},
+		Modal: {
+			boxShadow: shadowTokens.lg,
+		},
+		Form: {
+			paddingXS: 10,
+			marginLG: 16,
+		},
+		Steps: {
+			iconSize: 20,
+			iconTop: -2,
+			customIconFontSize: 20,
+			customIconSize: 20,
+			lineWidth: 2,
+			colorPrimary: colorTokens.palette.link.default,
+			colorTextDescription: colorTokens.text.textMinimal,
+			colorTextDisabled: colorTokens.text.textMinimal,
+			dotCurrentSize: 8,
+		},
+		Upload: {
+			colorPrimary: colorTokens.palette.link.default,
+		},
+		DatePicker: {
+			activeBorderColor: colorTokens.palette.link.default,
+			hoverBorderColor: colorTokens.palette.link.hover,
+			activeShadow: shadowTokens.input,
+			cellActiveWithRangeBg: colorTokens.palette.link.light,
+		},
+		Switch: {},
 		Input: {
-			colorBorder: colorTokens.palette.gray[400],
 			hoverBorderColor: colorTokens.palette.info.hover,
 			activeBorderColor: colorTokens.palette.info.default,
-			// activeShadow: "0px 2px 8px 0px #D4E3FC",
-			colorTextPlaceholder: colorTokens.text.disabled,
-			colorTextDisabled: colorTokens.text.textDisabled,
-			colorBgContainerDisabled: colorTokens.palette.gray[200],
+			activeShadow: shadowTokens.input,
 		},
 		Select: {
-			colorBorder: colorTokens.palette.gray[400],
 			hoverBorderColor: colorTokens.palette.info.hover,
 			activeBorderColor: colorTokens.palette.info.default,
-			colorTextPlaceholder: colorTokens.text.disabled,
-			colorTextDisabled: colorTokens.text.textDisabled,
-			colorBgContainerDisabled: colorTokens.palette.gray[200],
-			optionSelectedBg: colorTokens.palette.gray[100],
+			optionSelectedBg: colorTokens.palette.link.light,
 			optionSelectedColor: colorTokens.palette.info.default,
 			optionActiveBg: colorTokens.palette.gray[100],
 		},
-		Tree: {},
-		Modal: {
-			boxShadow: shadowTokens.lg,
+		Radio: {
+			colorPrimary: colorTokens.palette.link.default,
+			colorPrimaryHover: colorTokens.palette.link.hover,
+		},
+		Checkbox: {
+			colorPrimary: colorTokens.palette.link.default,
+			colorPrimaryHover: colorTokens.palette.link.hover,
+		},
+		Cascader: {
+			colorPrimary: colorTokens.palette.link.default,
+			colorPrimaryHover: colorTokens.palette.link.hover,
+			optionSelectedBg: colorTokens.palette.link.light,
+			optionSelectedColor: colorTokens.palette.info.default,
 		},
 		/**
 		 * 面包屑组件配置

@@ -22,9 +22,9 @@ export default function Toast() {
 						backgroundColor: themeVars.colors.background.paper,
 					},
 					classNames: {
-						toast: "rounded-lg border-0",
-						description: "text-xs text-current/45",
-						content: "flex-1 ml-6",
+						toast: "rounded-lg !border-0 p-4",
+						description: "text-xs ",
+						content: "flex-1 ml-2",
 						icon: "flex items-center justify-center rounded-lg",
 						success: "bg-success/10",
 						error: "bg-error/10",
@@ -33,31 +33,19 @@ export default function Toast() {
 					},
 				}}
 				icons={{
-					success: (
-						<div className="p-2 bg-success/10 rounded-lg">
-							<Icon icon="carbon:checkmark-filled" size={24} color={themeVars.colors.palette.success.default} />
-						</div>
-					),
+					success: <Icon icon="carbon:checkmark-filled" size={24} color={themeVars.colors.palette.success.default} />,
 					error: (
-						<div className="p-2 bg-error/10 rounded-lg">
-							<Icon icon="carbon:warning-hex-filled" size={24} color={themeVars.colors.palette.error.default} />
-						</div>
+						<Icon icon="ant-design:close-circle-filled" size={24} color={themeVars.colors.palette.error.default} />
 					),
 					warning: (
-						<div className="p-2 bg-warning/10 rounded-lg">
-							<Icon icon="carbon:warning-alt-filled" size={24} color={themeVars.colors.palette.warning.default} />
-						</div>
+						<Icon
+							icon="ant-design:exclamation-circle-filled"
+							size={24}
+							color={themeVars.colors.palette.warning.default}
+						/>
 					),
-					info: (
-						<div className="p-2 bg-info/10 rounded-lg">
-							<Icon icon="carbon:information-filled" size={24} color={themeVars.colors.palette.info.default} />
-						</div>
-					),
-					loading: (
-						<div className="p-2 bg-gray-400/10 text-gray-400 rounded-lg">
-							<Icon icon="svg-spinners:6-dots-scale-middle" size={24} speed={3} />
-						</div>
-					),
+					info: <Icon icon="ant-design:info-circle-filled" size={24} color={themeVars.colors.palette.info.default} />,
+					loading: <Icon className="animate-spin" icon="ant-design:loading-outlined" size={20} speed={3} />,
 				}}
 				expand
 			/>
@@ -69,6 +57,50 @@ const ToasterStyleWrapper = styled.div`
   [data-sonner-toast] {
     font-weight: 600;
     font-size: 14px;
+
+    /* Toast 模式样式 */
+    &.toast-mode {
+      padding: 10px 12px !important;
+      
+      /* Toast 模式下图标大小为14px */
+      [data-icon] svg {
+        width: 18px !important;
+        height: 18px !important;
+        margin-left: 6px;
+      }
+    }
+
+    /* Notification 模式样式 */
+    &.notification-mode {
+      padding: 16px !important;
+      
+      [data-icon] {
+        align-self: flex-start;
+        margin-top: 0;
+        margin-right: 12px;
+        margin-left: 0;
+      }
+      
+      /* Notification 模式下图标大小保持24px */
+      [data-icon] svg {
+        width: 24px !important;
+        height: 24px !important;
+      }
+      
+      [data-content] {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        margin-left: 0;
+      }
+      
+      /* 确保 icon 和内容在同一行 */
+      > div {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+      }
+    }
 
     [data-cancel] {
       color: ${themeVars.colors.text.primary};
@@ -125,18 +157,25 @@ const ToasterStyleWrapper = styled.div`
 
     /* Loading */
     &[data-type="loading"] [data-icon] .sonner-loader[data-visible="true"] {
-      margin-left: 12px;
+      margin-left: 6px;
+      color: ${themeVars.colors.palette.link.default};
+      position: absolute;
     }
 
     /* Close Button */
     [data-close-button] {
-      top: 0;
+      top: 14px;
       right: 0;
       left: auto;
-      border-width: 1px;
-      border-style: dashed;
-      background-color: ${themeVars.colors.background.paper};
-      border: 1px solid ${rgbAlpha(themeVars.colors.palette.gray[200], 0.2)};
+      background-color: transparent !important;
+      border: none !important;
+      border-width: 0 !important;
+      border-style: none !important;
+      box-shadow: none !important;
+    }
+
+    [data-description] {
+      color: ${themeVars.colors.text.textSecondary};
     }
   }
 `;

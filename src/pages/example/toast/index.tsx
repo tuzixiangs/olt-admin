@@ -1,6 +1,6 @@
+import { toast } from "@/components/olt-toast";
 import { Button } from "@/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/ui/card";
-import { toast } from "sonner";
 
 export default function ToastPage() {
 	const promise = () => new Promise((resolve) => setTimeout(() => resolve({ name: "Sonner" }), 2000));
@@ -36,7 +36,15 @@ export default function ToastPage() {
 						>
 							Info
 						</Button>
-						<Button variant="ghost" className="bg-success!" onClick={() => toast.success("Toast Success")}>
+						<Button
+							variant="ghost"
+							className="bg-success!"
+							onClick={() =>
+								toast.success("Toast Success", {
+									closeButton: true,
+								})
+							}
+						>
 							Success
 						</Button>
 						<Button variant="ghost" className="bg-warning!" onClick={() => toast.warning("Toast Warning")}>
@@ -172,6 +180,118 @@ export default function ToastPage() {
 							Bottom Left
 						</Button>
 					</div>
+				</CardContent>
+			</Card>
+			<Card title="Mode">
+				<CardHeader>
+					<CardTitle>Mode (Toast vs Notification)</CardTitle>
+				</CardHeader>
+				<CardContent>
+					<div className="flex flex-wrap gap-4">
+						<Button variant="outline" onClick={() => toast.success("Toast 模式消息", { mode: "toast" })}>
+							Toast 模式
+						</Button>
+						<Button
+							variant="outline"
+							onClick={() =>
+								toast.success("Notification 模式消息", {
+									mode: "notification",
+									description: "这是一个 notification 模式的描述信息",
+								})
+							}
+						>
+							Notification 模式
+						</Button>
+						<Button
+							variant="outline"
+							onClick={() =>
+								toast.error("错误提示", {
+									mode: "notification",
+									description: "这是一个错误的详细描述",
+									closeButton: true,
+								})
+							}
+						>
+							Notification 错误
+						</Button>
+						<Button
+							variant="outline"
+							onClick={() =>
+								toast.info("信息提示", {
+									mode: "notification",
+									description: "这是一个信息的详细描述，icon 和内容平行显示",
+								})
+							}
+						>
+							Notification 信息
+						</Button>
+					</div>
+				</CardContent>
+			</Card>
+			<Card title="Persistent Toast">
+				<CardHeader>
+					<CardTitle>Persistent Toast (Duration = 0)</CardTitle>
+				</CardHeader>
+				<CardContent>
+					<div className="flex flex-wrap gap-4">
+						<Button
+							variant="outline"
+							onClick={() =>
+								toast.success("持久化成功消息", {
+									duration: 0,
+									closeButton: true,
+								})
+							}
+						>
+							持久化成功
+						</Button>
+						<Button
+							variant="outline"
+							onClick={() =>
+								toast.error("持久化错误消息", {
+									duration: 0,
+									description: "这个错误消息会一直显示直到手动关闭",
+									closeButton: true,
+								})
+							}
+						>
+							持久化错误
+						</Button>
+						<Button
+							variant="outline"
+							onClick={() =>
+								toast.info("持久化信息", {
+									duration: 0,
+									mode: "notification",
+									description: "notification 模式的持久化消息",
+									closeButton: true,
+								})
+							}
+						>
+							持久化通知
+						</Button>
+						<Button
+							variant="outline"
+							onClick={() =>
+								toast("普通持久化消息", {
+									duration: 0,
+									action: {
+										label: "确认",
+										onClick: () => toast.success("已确认"),
+									},
+									cancel: {
+										label: "取消",
+										onClick: () => {},
+									},
+								})
+							}
+						>
+							带操作的持久化
+						</Button>
+					</div>
+					<p className="text-sm text-muted-foreground mt-4">
+						💡 提示：当 duration 设置为 0 时，toast 将不会自动销毁，需要用户手动关闭或通过代码控制。
+					</p>
 				</CardContent>
 			</Card>
 			<Card title="With Promise">

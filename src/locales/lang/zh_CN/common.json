@@ -17,6 +17,10 @@
 		"back": "返回",
 
 		"light": "亮色主题",
-		"dark": "黑暗主题"
+		"dark": "黑暗主题",
+
+		"uploadImage": "上传图片",
+		"uploadFailed": "上传失败",
+		"uploading": "上传中{{progress}}%..."
 	}
 }

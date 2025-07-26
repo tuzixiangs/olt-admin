@@ -6,9 +6,9 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button, Tag } from "antd";
 import type React from "react";
 
+import { toast } from "@/components/olt-toast";
 import { useRouter } from "@/routes/hooks";
 import { Tooltip } from "antd";
-import { toast } from "sonner";
 import { statusOptions } from "../dict";
 import { deletePost, getPosts, queryKeys } from "./api";
 import type { IPost, PostQueryParams } from "./types";

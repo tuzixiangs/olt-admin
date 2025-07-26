@@ -1,3 +1,4 @@
+import { toast } from "@/components/olt-toast";
 import type { TabActionParams } from "@/layouts/dashboard/multi-tabs/types";
 import { useRouter } from "@/routes/hooks";
 import { BetaSchemaForm, type ProFormColumnsType } from "@ant-design/pro-components";
@@ -5,7 +6,6 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "antd";
 import { memo } from "react";
 import { type LoaderFunctionArgs, useLoaderData } from "react-router";
-import { toast } from "sonner";
 import { statusOptions } from "../dict";
 import { createPost, getPost, queryKeys, updatePost } from "./api";
 import type { IPost } from "./types";

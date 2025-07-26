@@ -116,6 +116,7 @@
 			"upload": "上传",
 			"chart": "图表",
 			"toast": "Toast",
+			"notification": "通知组件",
 			"functions": "功能",
 			"clipboard": "剪贴板",
 			"token_expired": "Token失效",

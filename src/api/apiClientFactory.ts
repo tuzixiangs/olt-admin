@@ -1,3 +1,4 @@
+import { toast } from "@/components/olt-toast";
 import { GLOBAL_CONFIG } from "@/global-config";
 import { t } from "@/locales/i18n";
 import userStore from "@/store/userStore";
@@ -10,7 +11,6 @@ import axios, {
 	type InternalAxiosRequestConfig,
 } from "axios";
 import deepmerge from "deepmerge";
-import { toast } from "sonner";
 import type { Result } from "#/api";
 import { ResultStatus } from "#/enum";
 

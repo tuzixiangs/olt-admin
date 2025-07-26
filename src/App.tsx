@@ -6,7 +6,7 @@ import { Helmet, HelmetProvider } from "react-helmet-async";
 import { MotionLazy } from "./components/animate/motion-lazy";
 import { DialogManager } from "./components/dialog";
 import { RouteLoadingProgress } from "./components/loading";
-import Toast from "./components/toast";
+import Toast from "./components/olt-toast/toast";
 import { GLOBAL_CONFIG } from "./global-config";
 // import { useScrollRestoration } from "./hooks/use-scroll-restoration";
 import { MultiTabsProvider } from "./layouts/dashboard/multi-tabs/providers/multi-tabs-provider";

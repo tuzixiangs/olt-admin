@@ -18,6 +18,7 @@ export const lightShadowTokens = {
 	dialog: `-40px 40px 80px -8px ${Color(commonColors.black).alpha(0.24)}`,
 	card: `0 0 2px 0 ${Color(paletteColors.gray[500]).alpha(0.2)}, 0 12px 24px -4px ${Color(paletteColors.gray[500]).alpha(0.12)}`,
 	dropdown: `0 0 2px 0 ${Color(paletteColors.gray[500]).alpha(0.24)}, -20px 20px 40px -4px ${Color(paletteColors.gray[500]).alpha(0.24)}`,
+	input: `0 0 0 2px ${Color(paletteColors.link.light2).alpha(0.6)}`,
 
 	primary: `0 8px 16px 0 ${Color(paletteColors.primary.default).alpha(0.24)}`,
 	info: `0 8px 16px 0 ${Color(paletteColors.info.default).alpha(0.24)}`,
@@ -40,6 +41,7 @@ export const darkShadowTokens = {
 	dialog: `-40px 40px 80px -8px ${Color(commonColors.black).alpha(0.24)}`,
 	card: `0 0 2px 0 ${Color(commonColors.black).alpha(0.2)}, 0 12px 24px -4px ${Color(commonColors.black).alpha(0.12)}`,
 	dropdown: `0 0 2px 0 ${Color(commonColors.black).alpha(0.24)}, -20px 20px 40px -4px ${Color(commonColors.black).alpha(0.24)}`,
+	input: `0 0 0 2px ${Color(paletteColors.link.light2).alpha(0.6)}`,
 
 	primary: `0 8px 16px 0 ${Color(paletteColors.primary.default).alpha(0.24)}`,
 	info: `0 8px 16px 0 ${Color(paletteColors.info.default).alpha(0.24)}`,

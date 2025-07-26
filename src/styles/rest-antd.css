@@ -1,15 +1,3 @@
-.ant-pro-table {
-  .ant-pro-table-search {
-    margin-block-end: 0px;
-  }
-  .ant-pro-query-filter {
-    padding: 12px 0;
-  }
-  .ant-pro-card-body {
-    padding-inline: 0px;
-  }
-}
-
 /* button */
 .ant-btn-color-default.ant-btn-variant-dashed:hover,
 .ant-btn-color-default.ant-btn-variant-outlined:hover {
@@ -45,7 +33,67 @@
   background: var(--colors-palette-gray-200) !important;
 }
 
-.ant-input-outlined,
-.ant-select-selector {
-  box-shadow: none !important;
+.ant-select-focused.ant-select-outlined:not(.ant-select-disabled):not(.ant-select-customize-input):not(.ant-pagination-size-changer) .ant-select-selector {
+  box-shadow: 0 0 0 2px rgba(204, 222, 252, 0.6) !important;
+}
+
+/* modal */
+.ant-modal {
+  min-width: 480px;
+  max-width: 960px !important;
+  .ant-modal-header {
+    border-bottom: 1px solid var(--colors-palette-gray-300) !important;
+    padding: 16px 20px 14px 20px !important;
+    margin-bottom: 0px !important;
+  }
+  .ant-modal-content {
+    padding: 0px !important;
+    .ant-modal-body {
+      padding: 20px !important;
+    }
+  }
+}
+
+/* picker */
+.ant-picker-active-bar {
+  background: var(--colors-palette-link-default) !important;
+}
+
+/* switch */
+.ant-switch {
+  background: var(--colors-palette-gray-400) !important;
+}
+.ant-switch.ant-switch-checked{
+  background: var(--colors-palette-primary-default) !important;
+}
+.ant-switch-disabled {
+  background: var(--colors-palette-gray-200) !important;
+  opacity: 1 !important;
+}
+.ant-switch.ant-switch-disabled.ant-switch-checked {
+  background: var(--colors-palette-primary-disabled) !important;
+}
+
+/* message */
+.ant-message {
+  .ant-message-notice-success {
+    .ant-message-notice-content {
+      background-color: var(--colors-palette-success-light) !important;
+    }
+  }
+  .ant-message-notice-error {
+    .ant-message-notice-content {
+      background-color: var(--colors-palette-error-light) !important;
+    }
+  }
+  .ant-message-notice-warning {
+    .ant-message-notice-content {
+      background-color: var(--colors-palette-warning-light) !important;
+    }
+  }
+  .ant-message-notice-info {
+    .ant-message-notice-content {
+      background-color: var(--colors-palette-info-light) !important;
+    }
+  }
 }

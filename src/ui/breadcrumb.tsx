@@ -25,7 +25,7 @@ function BreadcrumbItem({ className, ...props }: React.ComponentProps<"li">) {
   return (
     <li
       data-slot="breadcrumb-item"
-      className={cn("inline-flex items-center gap-1.5 hover:text-foreground transition-colors", className)}
+      className={cn("inline-flex items-center gap-1.5 hover:text-primary transition-colors", className)}
       {...props}
     />
   )
@@ -43,7 +43,7 @@ function BreadcrumbLink({
   return (
     <Comp
       data-slot="breadcrumb-link"
-      className={cn("hover:text-foreground transition-colors", className)}
+      className={cn("hover:text-primary transition-colors", className)}
       {...props}
     />
   )

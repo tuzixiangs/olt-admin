@@ -4,7 +4,7 @@ import { createJSONStorage, persist } from "zustand/middleware";
 
 import userService, { type SignInReq } from "@/api/services/userService";
 
-import { toast } from "sonner";
+import { toast } from "@/components/olt-toast";
 import type { UserInfo, UserToken } from "#/entity";
 import { StorageEnum } from "#/enum";
 

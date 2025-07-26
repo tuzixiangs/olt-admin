@@ -7,7 +7,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button, Tag } from "antd";
 import type React from "react";
 
-import { toast } from "sonner";
+import { toast } from "@/components/olt-toast";
 import { statusOptions } from "../dict";
 import { deletePost, getPosts, queryKeys } from "./api";
 import PostDetail from "./detail";

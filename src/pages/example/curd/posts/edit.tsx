@@ -1,8 +1,8 @@
+import { toast } from "@/components/olt-toast";
 import { BetaSchemaForm, type ProFormColumnsType } from "@ant-design/pro-components";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "antd";
 import { memo } from "react";
-import { toast } from "sonner";
 import { statusOptions } from "../dict";
 import { createPost, queryKeys, updatePost } from "./api";
 import type { IPost } from "./types";

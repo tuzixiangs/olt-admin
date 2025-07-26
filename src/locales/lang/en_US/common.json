@@ -17,6 +17,10 @@
 		"back": "Back",
 
 		"light": "Light",
-		"dark": "Dark"
+		"dark": "Dark",
+
+		"uploadImage": "Upload Image",
+		"uploadFailed": "Upload Failed",
+		"uploading": "Uploading {{progress}}%..."
 	}
 }

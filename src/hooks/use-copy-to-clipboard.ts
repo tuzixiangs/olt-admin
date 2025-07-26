@@ -1,5 +1,5 @@
+import { toast } from "@/components/olt-toast";
 import { useState } from "react";
-import { toast } from "sonner";
 
 type CopiedValue = string | null;
 type CopyFn = (text: string) => Promise<boolean>;

@@ -429,6 +429,7 @@ export const themeTokens = {
 		dialog: null, // 对话框阴影
 		card: null, // 卡片阴影
 		dropdown: null, // 下拉菜单阴影
+		input: null, // 输入框阴影
 		primary: null, // 主色阴影
 		info: null, // 信息色阴影
 		success: null, // 成功色阴影
