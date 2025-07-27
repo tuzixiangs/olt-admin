@@ -22,5 +22,24 @@
 		"uploadImage": "Upload Image",
 		"uploadFailed": "Upload Failed",
 		"uploading": "Uploading {{progress}}%..."
+	},
+	"table": {
+		"columnSetting": "Column Settings",
+		"columnConfig": "Field Configuration",
+		"pinToStart": "Pin to Start",
+		"pinToEnd": "Pin to End",
+		"pinToLeft": "Pin to Left",
+		"pinToRight": "Pin to Right",
+		"unpin": "Unpin",
+		"fixedLeft": "Fixed Left",
+		"fixedRight": "Fixed Right",
+		"normalFields": "Normal Fields",
+		"lock": "Lock",
+		"unlock": "Unlock",
+		"addField": "Add Field",
+		"noFields": "No Fields",
+		"fieldDeleted": "Field Deleted",
+		"fieldAddedSuccess": "Field Added Successfully",
+		"configReset": "Configuration Reset"
 	}
 }

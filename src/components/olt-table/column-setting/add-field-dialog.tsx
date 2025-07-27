@@ -118,8 +118,8 @@ const AddFieldDialog = ({ visible, onOk, onCancel, existingKeys }: AddFieldDialo
 					<Radio.Group className="w-full">
 						<div className="grid grid-cols-3 gap-2">
 							{fieldTypeOptions.map((option) => (
-								<Radio.Button key={option.value} value={option.value} className="flex items-center justify-center h-12">
-									<div className="flex flex-col items-center gap-1">
+								<Radio.Button key={option.value} value={option.value} className="flex items-center justify-center">
+									<div className="flex items-center justify-center gap-1 h-full">
 										<Icon icon={option.icon} className="text-lg" />
 										<span className="text-xs">{option.label}</span>
 									</div>

@@ -16,6 +16,8 @@ export interface ColumnConfig {
 	locked: boolean;
 	/** 排序索引 */
 	sortIndex: number;
+	/** 原始排序索引（用于取消固定时恢复位置） */
+	originalSortIndex: number;
 	/** 列宽度 */
 	width?: number;
 	/** 固定位置 */

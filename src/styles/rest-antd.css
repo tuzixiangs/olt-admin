@@ -52,6 +52,9 @@
       padding: 20px !important;
     }
   }
+  .ant-modal-footer {
+    padding: 20px !important;
+  }
 }
 
 /* picker */

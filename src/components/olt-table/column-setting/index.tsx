@@ -1,4 +1,5 @@
 import { Icon } from "@/components/icon";
+import { toast } from "@/components/olt-toast";
 import type { ProColumns } from "@ant-design/pro-components";
 import {
 	DndContext,
@@ -16,10 +17,13 @@ import {
 	verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { useDebounceFn } from "ahooks";
-import { Button, Empty, Popover, Tooltip, message } from "antd";
+import { Button, Empty, Popover, Tooltip } from "antd";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import AddFieldDialog from "./add-field-dialog";
 import SortableItem from "./dragable-item";
+import { FixedItem } from "./fixed-item";
+import { LockedItem } from "./locked-item";
 import type { AddFieldFormData, ColumnConfig, ColumnSettingProps } from "./types";
 
 const ColumnSetting = ({
@@ -27,12 +31,13 @@ const ColumnSetting = ({
 	onColumnsChange,
 	defaultLockedColumns = [],
 	enableStorage = false,
-	storageKey = "olt-table-column-config",
+	storageKey = "olt-table-columns",
 }: ColumnSettingProps) => {
-	const [configs, setConfigs] = useState<ColumnConfig[]>([]);
-	const [addFieldVisible, setAddFieldVisible] = useState(false);
-	const [originalConfigs, setOriginalConfigs] = useState<ColumnConfig[]>([]);
+	const { t } = useTranslation();
 	const [open, setOpen] = useState(false);
+	const [configs, setConfigs] = useState<ColumnConfig[]>([]);
+	const [originalConfigs, setOriginalConfigs] = useState<ColumnConfig[]>([]);
+	const [addFieldVisible, setAddFieldVisible] = useState(false);
 	const prevColumnsRef = useRef<ProColumns[]>([]);
 
 	const sensors = useSensors(
@@ -45,35 +50,38 @@ const ColumnSetting = ({
 	// 将 ProColumns 转换为 ColumnConfig
 	const convertColumnsToConfigs = useCallback(
 		(cols: ProColumns[]): ColumnConfig[] => {
-			return cols.map((col, index) => ({
-				key: col.key?.toString() || col.dataIndex?.toString() || `column-${index}`,
-				title: col.title?.toString() || "",
-				dataIndex: col.dataIndex?.toString() || "",
-				visible: !col.hideInTable,
-				locked: defaultLockedColumns.includes(col.key?.toString() || col.dataIndex?.toString() || ""),
-				sortIndex: index,
-				width: col.width as number,
-				fixed: col.fixed as "left" | "right" | undefined,
-				originalColumn: col,
-			}));
+			return cols.map((col, index) => {
+				// 优先使用 dataIndex 作为 key，然后是 key，最后是索引
+				const columnKey = col.dataIndex?.toString() || col.key?.toString() || `column-${index}`;
+				return {
+					key: columnKey,
+					title: col.title?.toString() || "",
+					dataIndex: col.dataIndex?.toString() || "",
+					visible: !col.hideInTable,
+					locked: defaultLockedColumns.includes(columnKey),
+					sortIndex: index,
+					originalSortIndex: index, // 记住原始位置
+					width: col.width as number,
+					fixed: col.fixed as "left" | "right" | undefined,
+					originalColumn: col,
+				};
+			});
 		},
 		[defaultLockedColumns],
 	);
 
 	// 将 ColumnConfig 转换回 ProColumns
 	const convertConfigsToColumns = useCallback((configs: ColumnConfig[]): ProColumns[] => {
-		return configs
-			.filter((config) => config.visible)
-			.sort((a, b) => a.sortIndex - b.sortIndex)
-			.map((config) => ({
-				...config.originalColumn,
-				key: config.key,
-				title: config.title,
-				dataIndex: config.dataIndex,
-				width: config.width,
-				fixed: config.fixed,
-				hideInTable: false,
-			}));
+		return configs.map((config) => ({
+			...config.originalColumn,
+			key: config.key,
+			title: config.title,
+			dataIndex: config.dataIndex,
+			width: config.width,
+			fixed: config.fixed,
+			index: config.sortIndex,
+			hideInTable: config.visible,
+		}));
 	}, []);
 
 	// 从 localStorage 加载配置
@@ -157,9 +165,20 @@ const ColumnSetting = ({
 				return newConfigs.map((config, index) => ({
 					...config,
 					sortIndex: index,
+					originalSortIndex: index,
 				}));
 			});
 		}
+	}, []);
+
+	// 切换显示/隐藏
+	const handleVisibilityChange = useCallback((key: string, visible: boolean) => {
+		setConfigs((prev) => prev.map((config) => (config.key === key ? { ...config, visible } : config)));
+	}, []);
+
+	// 切换锁定状态
+	const handleLockChange = useCallback((key: string, locked: boolean) => {
+		setConfigs((prev) => prev.map((config) => (config.key === key ? { ...config, locked } : config)));
 	}, []);
 
 	// 切换可见性
@@ -171,9 +190,76 @@ const ColumnSetting = ({
 	}, []);
 
 	// 删除字段
-	const handleDelete = useCallback((key: string) => {
-		setConfigs((prev) => prev.filter((config) => config.key !== key));
-		message.success("字段已删除");
+	const handleDelete = useCallback(
+		(key: string) => {
+			setConfigs((prev) => prev.filter((config) => config.key !== key));
+			toast.success(t("table.fieldDeleted"));
+		},
+		[t],
+	);
+
+	// 固定到列首
+	const handlePinToStart = useCallback((key: string) => {
+		setConfigs((prev) => {
+			const targetIndex = prev.findIndex((config) => config.key === key);
+			if (targetIndex === -1) return prev;
+
+			const targetConfig = { ...prev[targetIndex], fixed: "left" as const };
+			const newConfigs = [...prev];
+			newConfigs.splice(targetIndex, 1);
+
+			// 找到左侧固定字段的插入位置（插入到所有左侧固定字段的末尾）
+			const leftFixedConfigs = newConfigs.filter((c) => c.fixed === "left");
+			const insertIndex = leftFixedConfigs.length;
+
+			newConfigs.splice(insertIndex, 0, targetConfig);
+
+			// 重新计算 sortIndex
+			return newConfigs.map((config) => ({
+				...config,
+			}));
+		});
+	}, []);
+
+	// 固定到列尾
+	const handlePinToEnd = useCallback((key: string) => {
+		setConfigs((prev) => {
+			const targetIndex = prev.findIndex((config) => config.key === key);
+			if (targetIndex === -1) return prev;
+
+			const targetConfig = { ...prev[targetIndex], fixed: "right" as const };
+			const newConfigs = [...prev];
+			newConfigs.splice(targetIndex, 1);
+
+			// 找到右侧固定字段的插入位置（插入到所有右侧固定字段的开头）
+			const leftFixedConfigs = newConfigs.filter((c) => c.fixed === "left");
+			const normalConfigs = newConfigs.filter((c) => !c.fixed);
+			const insertIndex = leftFixedConfigs.length + normalConfigs.length;
+
+			newConfigs.splice(insertIndex, 0, targetConfig);
+
+			// 重新计算 sortIndex
+			return newConfigs.map((config) => ({
+				...config,
+			}));
+		});
+	}, []);
+
+	// 取消固定
+	const handleUnpin = useCallback((key: string) => {
+		setConfigs((prev) => {
+			const targetIndex = prev.findIndex((config) => config.key === key);
+			if (targetIndex === -1) return prev;
+
+			const targetConfig = { ...prev[targetIndex], sortIndex: prev[targetIndex].originalSortIndex, fixed: undefined };
+			const newConfigs = [...prev];
+			newConfigs.splice(targetIndex, 1);
+
+			newConfigs.splice(prev[targetIndex].originalSortIndex, 0, targetConfig);
+
+			// 重新计算 sortIndex
+			return newConfigs;
+		});
 	}, []);
 
 	// 新增字段
@@ -186,6 +272,7 @@ const ColumnSetting = ({
 				visible: true,
 				locked: false,
 				sortIndex: configs.length,
+				originalSortIndex: configs.length, // 新增字段的原始位置就是当前位置
 				width: data.width,
 				fixed: data.fixed,
 				originalColumn: {
@@ -200,9 +287,9 @@ const ColumnSetting = ({
 
 			setConfigs((prev) => [...prev, newConfig]);
 			setAddFieldVisible(false);
-			message.success("字段添加成功");
+			toast.success(t("table.fieldAddedSuccess"));
 		},
-		[configs.length],
+		[configs.length, t],
 	);
 
 	// 重置配置
@@ -211,8 +298,8 @@ const ColumnSetting = ({
 		if (enableStorage) {
 			localStorage.removeItem(storageKey);
 		}
-		message.success("配置已重置");
-	}, [originalConfigs, enableStorage, storageKey]);
+		toast.success(t("table.configReset"));
+	}, [originalConfigs, enableStorage, storageKey, t]);
 
 	// 监听 configs 变化并防抖应用
 	useEffect(() => {
@@ -224,31 +311,34 @@ const ColumnSetting = ({
 	// 获取已存在的字段key列表
 	const existingKeys = useMemo(() => configs.map((config) => config.key), [configs]);
 
+	// 按固定位置分离字段
+	const leftFixedConfigs = useMemo(() => configs.filter((config) => config.fixed === "left"), [configs]);
+	const rightFixedConfigs = useMemo(() => configs.filter((config) => config.fixed === "right"), [configs]);
+	const normalConfigs = useMemo(() => configs.filter((config) => !config.fixed), [configs]);
+
+	// 分离锁定字段和可拖动字段（仅在普通字段中）
+	const lockedNormalConfigs = useMemo(() => normalConfigs.filter((config) => config.locked), [normalConfigs]);
+	const draggableNormalConfigs = useMemo(() => normalConfigs.filter((config) => !config.locked), [normalConfigs]);
+
 	return (
 		<>
 			<Popover
 				placement="bottomLeft"
-				style={{
-					padding: 0,
+				styles={{
+					body: {
+						padding: 0,
+					},
 				}}
 				arrow={false}
 				content={
-					<div className="w-80 p-2">
+					<div className="w-80 p-0">
 						<div className="flex flex-col h-full">
 							{/* 标题栏 */}
-							<div className="flex items-center justify-between mb-3">
+							<div className="flex items-center justify-between py-3.5 pl-5 pr-3 border-b">
 								<div className="flex items-center gap-2">
-									<span className="font-medium">字段配置</span>
+									<span className="font-medium">{t("table.columnConfig")}</span>
 								</div>
 								<div className="flex gap-1">
-									<Button
-										type="text"
-										size="small"
-										onClick={() => {
-											setAddFieldVisible(true);
-										}}
-										icon={<Icon icon="material-symbols:add" />}
-									/>
 									<Button
 										type="text"
 										size="small"
@@ -258,30 +348,122 @@ const ColumnSetting = ({
 								</div>
 							</div>
 
-							{/* 字段列表 */}
+							{/* 内容区域 */}
 							<div className="flex-1 overflow-hidden">
-								<div className="h-full py-1">
+								<div className="h-full">
 									{configs.length > 0 ? (
-										<DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-											<SortableContext
-												items={configs.map((config) => config.key)}
-												strategy={verticalListSortingStrategy}
-											>
-												<div className="space-y-2">
-													{configs.map((config) => (
-														<SortableItem
-															key={config.key}
-															config={config}
-															onToggleVisible={handleToggleVisible}
-															onDelete={config.locked ? undefined : handleDelete}
-														/>
-													))}
+										<div className="space-y-0">
+											{/* 锁定的普通字段 */}
+											{lockedNormalConfigs.length > 0 && (
+												<div className="px-1.5 py-2 border-b">
+													<div className="space-y-0">
+														{lockedNormalConfigs.map((config) => (
+															<LockedItem key={config.key} config={config} onToggleVisible={handleToggleVisible} />
+														))}
+													</div>
 												</div>
-											</SortableContext>
-										</DndContext>
+											)}
+
+											{/* 固定在左侧的字段 */}
+											{leftFixedConfigs.length > 0 && (
+												<div className="border-b">
+													<div className="px-3 py-2 bg-blue-50 text-xs text-blue-600 font-medium">
+														{t("table.fixedLeft")}
+													</div>
+													<div className="px-1.5 py-2">
+														<div className="space-y-0">
+															{leftFixedConfigs.map((config) => (
+																<FixedItem
+																	key={config.key}
+																	config={config}
+																	onVisibilityChange={handleVisibilityChange}
+																	onLockChange={handleLockChange}
+																	onDelete={handleDelete}
+																	onUnpin={handleUnpin}
+																/>
+															))}
+														</div>
+													</div>
+												</div>
+											)}
+
+											{/* 普通字段区域 */}
+											{normalConfigs.length > 0 && (
+												<div className={rightFixedConfigs.length > 0 ? "border-b" : ""}>
+													{/* 可拖动的普通字段 */}
+													{draggableNormalConfigs.length > 0 && (
+														<div className="px-1.5 py-2">
+															<DndContext
+																sensors={sensors}
+																collisionDetection={closestCenter}
+																onDragEnd={handleDragEnd}
+															>
+																<SortableContext
+																	items={draggableNormalConfigs.map((config) => config.key)}
+																	strategy={verticalListSortingStrategy}
+																>
+																	<div className="space-y-0">
+																		{draggableNormalConfigs.map((config) => (
+																			<SortableItem
+																				key={config.key}
+																				config={config}
+																				onVisibilityChange={handleVisibilityChange}
+																				onLockChange={handleLockChange}
+																				onDelete={handleDelete}
+																				onPinToStart={handlePinToStart}
+																				onPinToEnd={handlePinToEnd}
+																			/>
+																		))}
+																	</div>
+																</SortableContext>
+															</DndContext>
+														</div>
+													)}
+												</div>
+											)}
+
+											{/* 固定在右侧的字段 */}
+											{rightFixedConfigs.length > 0 && (
+												<div>
+													<div className="px-3 py-2 bg-green-50 text-xs text-green-600 font-medium">
+														{t("table.fixedRight")}
+													</div>
+													<div className="px-1.5 py-2">
+														<div className="space-y-0">
+															{rightFixedConfigs.map((config) => (
+																<FixedItem
+																	key={config.key}
+																	config={config}
+																	onVisibilityChange={handleVisibilityChange}
+																	onLockChange={handleLockChange}
+																	onDelete={handleDelete}
+																	onUnpin={handleUnpin}
+																/>
+															))}
+														</div>
+													</div>
+												</div>
+											)}
+										</div>
 									) : (
-										<Empty description="暂无字段" image={Empty.PRESENTED_IMAGE_SIMPLE} />
+										<div className="p-3">
+											<Empty description={t("table.noFields")} image={Empty.PRESENTED_IMAGE_SIMPLE} />
+										</div>
 									)}
+								</div>
+							</div>
+
+							{/* 新增字段按钮 */}
+							<div className="px-5 py-3.5 border-t">
+								{/* TODO:实验性功能，暂不支持 */}
+								<div
+									className="text-left flex items-center gap-1 pl-1.5 cursor-pointer"
+									onClick={() => {
+										setAddFieldVisible(true);
+									}}
+								>
+									<Icon icon="material-symbols:add" />
+									<span>{t("table.addField")}</span>
 								</div>
 							</div>
 						</div>
@@ -291,8 +473,8 @@ const ColumnSetting = ({
 				open={open}
 				onOpenChange={setOpen}
 			>
-				<Tooltip title="列设置">
-					<div className="hover:text-blue-700 cursor-pointer">
+				<Tooltip title={t("table.columnSetting")}>
+					<div className="hover:text-blue-700 cursor-pointer flex items-center">
 						<Icon icon="ant-design:setting-outlined" size={20} />
 					</div>
 				</Tooltip>

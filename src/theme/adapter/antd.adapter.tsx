@@ -155,6 +155,11 @@ export const AntdAdapter: UILibraryAdapter = ({ mode, children }) => {
 			optionSelectedBg: colorTokens.palette.link.light,
 			optionSelectedColor: colorTokens.palette.info.default,
 		},
+		InputNumber: {
+			hoverBorderColor: colorTokens.palette.info.hover,
+			activeBorderColor: colorTokens.palette.info.default,
+			activeShadow: shadowTokens.input,
+		},
 		/**
 		 * 面包屑组件配置
 		 */

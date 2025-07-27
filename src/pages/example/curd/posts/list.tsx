@@ -17,7 +17,7 @@ import type { IPost, PostQueryParams } from "./types";
 const PostList: React.FC = () => {
 	const { tableProps, refresh } = useProTable<IPost, PostQueryParams>(getPosts, {
 		queryKey: [queryKeys.posts],
-		defaultPageSize: 10,
+		defaultPageSize: 20,
 	});
 
 	const queryClient = useQueryClient();
@@ -95,7 +95,7 @@ const PostList: React.FC = () => {
 		{
 			title: "ID",
 			dataIndex: "id",
-			search: false,
+			// search: false,
 			width: 200,
 		},
 		{
@@ -109,7 +109,8 @@ const PostList: React.FC = () => {
 			title: "内容",
 			dataIndex: "content",
 			ellipsis: true,
-			search: false,
+			// search: false,
+			minWidth: 200,
 		},
 		{
 			title: "状态",
@@ -125,7 +126,7 @@ const PostList: React.FC = () => {
 			title: "创建时间",
 			dataIndex: "createdAt",
 			valueType: "dateTime",
-			search: false,
+			// search: false,
 			width: 180,
 		},
 		{
@@ -183,6 +184,7 @@ const PostList: React.FC = () => {
 			options={{
 				reload: () => refresh(),
 			}}
+			defaultLockedColumns={["title"]}
 		/>
 	);
 };

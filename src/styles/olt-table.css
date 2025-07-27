@@ -1,6 +1,5 @@
 /* 导入列设置样式 */
 
-
 .olt-table-stripe:nth-child(odd) {
 	background-color: var(--colors-background-stripe);
 }
@@ -8,7 +7,48 @@
 	cursor: pointer;
 }
 .olt-table-column-setting-popover {
-  .ant-popover-inner-content {
-    padding: 0;
-  }
+	.ant-popover-inner-content {
+		padding: 0;
+	}
 }
+
+/* .page-container {
+	.ant-pro-table {
+		height: calc(100% - 148px);
+		.ant-pro-card:last-child {
+			height: 100%;
+		}
+	}
+
+	.ant-table-wrapper {
+		height: 100%;
+		.ant-spin-nested-loading {
+			height: 100%;
+			.ant-spin-container {
+        display: flex;
+        flex-flow: column nowrap;
+				height: 100%;
+				.ant-table {
+					flex: auto;
+					overflow: hidden;
+					.ant-table-container {
+						height: 100%;
+						display: flex;
+						flex-flow: column nowrap;
+						.ant-table-header {
+							overflow: hidden;
+							flex: none;
+						}
+						.ant-table-body {
+							overflow: auto scroll;
+							flex: auto;
+						}
+					}
+				}
+			}
+      .ant-table-pagination {
+        flex: none;
+      }
+		}
+	}
+} */

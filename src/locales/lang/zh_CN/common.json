@@ -22,5 +22,26 @@
 		"uploadImage": "上传图片",
 		"uploadFailed": "上传失败",
 		"uploading": "上传中{{progress}}%..."
+	},
+	"table": {
+		"columnSetting": "列设置",
+		"columnConfig": "字段配置",
+		"noFields": "暂无字段",
+		"addField": "新增字段",
+		"pinToStart": "固定在列首",
+		"pinToEnd": "固定在列尾",
+		"pinToLeft": "固定在左侧",
+		"pinToRight": "固定在右侧",
+		"unpin": "取消固定",
+		"fixedLeft": "固定在左侧",
+		"fixedRight": "固定在右侧",
+		"normalFields": "普通字段",
+		"lock": "锁定",
+		"unlock": "解锁",
+		"fieldDeleted": "字段已删除",
+		"fieldAddedSuccess": "字段添加成功",
+		"configReset": "配置已重置",
+		"lockedFields": "锁定字段",
+		"draggableFields": "可拖动字段"
 	}
 }

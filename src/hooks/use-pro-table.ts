@@ -1,5 +1,5 @@
 import type { ProFormInstance } from "@ant-design/pro-components";
-import { type UseQueryOptions, useQuery } from "@tanstack/react-query";
+import { type UseQueryOptions, useQuery, keepPreviousData } from "@tanstack/react-query";
 import type { TablePaginationConfig, TableProps } from "antd";
 import type { FilterValue, SorterResult, TableCurrentDataSource } from "antd/es/table/interface";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -63,6 +63,9 @@ interface UseProTableResult<TData = any, TParams = any> {
 	refresh: () => void;
 	run: (newParams?: [PaginationParams, TParams?]) => void; // 手动查询方法
 	params: [PaginationParams, TParams?];
+	isPlaceholderData: boolean; // 是否为占位数据
+	isFetching: boolean; // 是否正在获取数据（包括后台刷新）
+	isLoading: boolean; // 是否为初始加载状态
 }
 
 export function useProTable<TData = any, TParams = any>(
@@ -114,11 +117,12 @@ export function useProTable<TData = any, TParams = any>(
 	});
 
 	// 使用 useQuery 获取数据，支持完整配置
-	const { data, isLoading, refetch, error } = useQuery<QueryResult<TData>, Error>({
+	const { data, isLoading, isFetching, refetch, error, isPlaceholderData } = useQuery<QueryResult<TData>, Error>({
 		...queryOptions, // 传递用户的所有 useQuery 配置
 		queryKey: [...queryKey, params[0], params[1]],
 		queryFn: () => antdService(params[0], params[1]),
 		enabled: !manual, // 根据 manual 控制自动查询
+		placeholderData: keepPreviousData, // 保持之前的数据，避免分页时数据清空
 	});
 
 	// 使用 useEffect 来处理成功和错误回调
@@ -254,7 +258,7 @@ export function useProTable<TData = any, TParams = any>(
 	const tableProps = useMemo(
 		() => ({
 			dataSource: data?.list || [],
-			loading: isLoading,
+			loading: isFetching, // 使用 isFetching 来显示 loading 状态，包括后台刷新
 			formRef,
 			onSubmit,
 			onReset,
@@ -269,7 +273,7 @@ export function useProTable<TData = any, TParams = any>(
 			},
 			onChange: handleTableChange,
 		}),
-		[data, isLoading, params, handlePaginationChange, handleShowSizeChange, handleTableChange, onSubmit, onReset],
+		[data, isFetching, params, handlePaginationChange, handleShowSizeChange, handleTableChange, onSubmit, onReset],
 	);
 
 	return {
@@ -281,5 +285,8 @@ export function useProTable<TData = any, TParams = any>(
 		refresh: handleRefresh,
 		run,
 		params,
+		isPlaceholderData,
+		isFetching,
+		isLoading,
 	};
 }
