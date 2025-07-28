@@ -1,10 +1,10 @@
 import { Icon } from "@/components/icon";
 import { useCopyToClipboard } from "@/hooks";
-import { Button } from "@/ui/button";
 import { Card, CardContent } from "@/ui/card";
-import { Input } from "@/ui/input";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/ui/tooltip";
 import { faker } from "@faker-js/faker";
+import { Button } from "antd";
+import { Input } from "antd";
 import { type ChangeEvent, useState } from "react";
 
 export default function ClipboardPage() {
@@ -18,9 +18,7 @@ export default function ClipboardPage() {
 	const CopyButton = (
 		<Tooltip>
 			<TooltipTrigger asChild>
-				<Button variant="ghost" size="icon" onClick={() => copyFn(value)}>
-					<Icon icon="eva:copy-fill" size={20} />
-				</Button>
+				<Button type="text" icon={<Icon icon="eva:copy-fill" size={20} />} onClick={() => copyFn(value)} />
 			</TooltipTrigger>
 			<TooltipContent>Copy</TooltipContent>
 		</Tooltip>

@@ -1,6 +1,6 @@
-# 项目模块化结构 (Feature-Sliced Design)
+# 项目结构文档 (Feature-Sliced Design)
 
-本目录 (`src/pages`) 不仅存放项目的页面级组件，更是我们实践 **模块化架构 (Feature-Sliced Design)** 的核心区域。其核心思想是：**将实现同一功能的代码组织在一起，而不是按技术类型分散在不同目录中**。
+本目录 (`src/pages`) 不仅存放项目的页面级组件，更是实践 **模块化架构 (Feature-Sliced Design)** 的核心区域。其核心思想是：**将实现同一功能的代码组织在一起，而不是按技术类型分散在不同目录中**。
 
 ## 核心原则 (高内聚、低耦合)
 
@@ -18,8 +18,8 @@
 *   `src/hooks`: 存放通用的、与业务无关的自定义 Hooks，如 `useMediaQuery`, `useCopyToClipboard`。
 *   `src/utils`: 全局工具函数。
 *   `src/store`: 全局 Zustand store 的初始化或不属于任何特定模块的通用状态。
-*   `src/types`: 全局共享的、非业务相关的核心类型。
-*   `src/dict`: 全局共享的、非业务相关的字典。
+*   `src/types`: 全局共享的核心类型。
+*   `src/dict`: 全局共享的字典。
 
 ### 2. 功能模块资源 (pages/*)
 
@@ -35,13 +35,13 @@
 #### B. 子模块的“实现层” (子模块管理)
   每个子模块（如 pages/management/system/user）都是一个高度独立的单元，遵循 “谁使用，谁拥有” 的原则。
 
-* API 请求 (`api.ts`): 封装与该子模块业务紧密相关的后端接口调用。
+* API 请求 (`api.ts ｜ api/*`): 封装与该子模块业务紧密相关的后端接口调用。
 
-* 状态管理 (`store.ts`): 管理该子模块独有的组件状态。
+* 状态管理 (`store.ts ｜ store/*`): 管理该子模块独有的组件状态。
 
-* 类型定义 (`types.ts`): 定义该子模块使用的数据模型。
+* 类型定义 (`types.ts ｜ types/*`): 定义该子模块使用的数据模型。
 
-* 自定义 Hooks (`hooks.ts`): 封装该子模块特有的、可复用的业务逻辑。
+* 自定义 Hooks (`hooks.ts ｜ hooks/*`): 封装该子模块特有的、可复用的业务逻辑。
 
 * 私有组件 (`components/`): 仅在该子模块内部使用的 React 组件。
 
@@ -71,7 +71,7 @@ src/
       │
       ├─ routes/          # 👈 模块的“公共层”：路由，负责串联
       │  ├─ index.ts      #    主路由文件，聚合所有子路由
-      │  └─ curd.routes.ts #    按子域拆分的路由 (一个子模块下有多个子模块，可以在进行一层拆分，比如 posts 和 role)
+      │  └─ curd.routes.ts #    按子域拆分的路由 (一个子模块下有多个子模块，可以进一步拆分，比如 posts 和 ui)
       │
       └─ dict/            # 👈 模块的“公共层”：共享资源
          └─ curd.ts     #    可被 posts 和 role 模块共用的字典

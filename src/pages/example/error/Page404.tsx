@@ -1,4 +1,3 @@
-import Character from "@/assets/images/characters/character_1.png";
 import { themeVars } from "@/theme/theme.css";
 import ErrorLayout from "./components/ErrorLayout";
 
@@ -20,7 +19,7 @@ export default function Page404() {
 				opacity="0.2"
 			/>
 			{/* character */}
-			<image href={Character} height="300" x="205" y="30" />
+			{/* <image href={Character} height="300" x="205" y="30" /> */}
 			{/* sun */}
 			<path fill="#FFAB00" d="M111.1 141.2c58.7-1 58.6-88.3 0-89.2-58.6 1-58.6 88.3 0 89.2z" opacity="0.12" />
 			{/* sun */}

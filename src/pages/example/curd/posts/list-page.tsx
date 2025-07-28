@@ -1,4 +1,4 @@
-import { dialog } from "@/components/dialog";
+import { dialog } from "@/components/olt-modal";
 import OltTable from "@/components/olt-table";
 import { useProTable } from "@/hooks/use-pro-table";
 import type { ProColumns } from "@ant-design/pro-components";

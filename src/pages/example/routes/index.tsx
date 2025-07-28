@@ -54,27 +54,11 @@ const exampleRoutes: AppRouteObject[] = [
 				},
 			},
 			{
-				path: "chart",
-				Component: lazy(() => import("@/pages/example/chart")),
-				handle: {
-					key: "chart",
-					title: $t("sys.nav.chart"),
-				},
-			},
-			{
 				path: "toast",
 				Component: lazy(() => import("@/pages/example/toast")),
 				handle: {
 					key: "toast",
 					title: $t("sys.nav.toast"),
-				},
-			},
-			{
-				path: "upload",
-				Component: lazy(() => import("@/pages/example/upload")),
-				handle: {
-					key: "upload",
-					title: $t("sys.nav.upload"),
 				},
 			},
 		],
@@ -247,15 +231,6 @@ const exampleRoutes: AppRouteObject[] = [
 				handle: { key: "external-link", title: $t("sys.nav.external_link") },
 			},
 		],
-	},
-	{
-		path: "permission",
-		Component: lazy(() => import("@/pages/example/others/permission")),
-		handle: {
-			key: "permission",
-			title: $t("sys.nav.permission"),
-			groupKey: "pages",
-		},
 	},
 ];
 
