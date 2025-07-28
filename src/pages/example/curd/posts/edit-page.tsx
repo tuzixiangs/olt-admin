@@ -5,7 +5,7 @@ import { BetaSchemaForm, type ProFormColumnsType } from "@ant-design/pro-compone
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "antd";
 import { memo } from "react";
-import { type LoaderFunctionArgs, useLoaderData } from "react-router";
+import { type LoaderFunctionArgs, useLoaderData, useLocation } from "react-router";
 import { statusOptions } from "../dict";
 import { createPost, getPost, queryKeys, updatePost } from "./api";
 import type { IPost } from "./types";
@@ -59,6 +59,8 @@ export const loader = async ({ params }: LoaderFunctionArgs): Promise<TabActionP
  * 通过 loader 获取数据
  */
 const PostEditForm = memo(() => {
+	const location = useLocation();
+	console.log("[ location ] >", location);
 	const { editData } = useLoaderData<{ editData: IPost }>();
 	const { back } = useRouter();
 	const queryClient = useQueryClient();

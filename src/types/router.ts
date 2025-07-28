@@ -27,6 +27,11 @@ export interface RouteMeta {
 	 * menu open
 	 */
 	open?: boolean;
+
+	/**
+	 * TODO:keepAlive 是否缓存路由
+	 */
+	// keepAlive?: boolean;
 	/**
 	 * menu active
 	 */

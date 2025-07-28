@@ -96,7 +96,7 @@ const items: StepProps[] = [
 ];
 
 // 测试ui规范中的各个组件
-export default function CustomUi() {
+const CustomUi = () => {
 	const [fileList, setFileList] = useState<UploadFile[]>([]);
 
 	const handleFileListChange = ({ fileList }: { fileList: UploadFile[] }) => {
@@ -104,8 +104,9 @@ export default function CustomUi() {
 	};
 	const [messageApi, contextHolder] = message.useMessage();
 	return (
-		<>
+		<div style={{ padding: "20px" }}>
 			{contextHolder}
+
 			<Row gutter={16}>
 				<Col span={24} className="mb-4">
 					<div className="text-text-text14 mb-2 text-lg">基础按钮</div>
@@ -408,6 +409,10 @@ export default function CustomUi() {
 					/>
 				</Col>
 			</Row>
-		</>
+		</div>
 	);
+};
+
+export default function UiPage() {
+	return <CustomUi />;
 }

@@ -1,7 +1,7 @@
 import { useTableScroll } from "@/hooks/use-table-scroll";
 import { type ColumnsState, type ParamsType, type ProColumns, ProTable } from "@ant-design/pro-components";
 // import { Pagination } from "antd";
-import { useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import ColumnSetting from "./column-setting";
 import type { ColumnStateType, OltTableProps } from "./types";
 
@@ -12,6 +12,7 @@ const OltTable = <T extends Record<string, any> = any, Params extends ParamsType
 	defaultLockedColumns = [],
 	enableColumnStorage = false,
 	columnStorageKey,
+	params,
 	...tableProps
 }: OltTableProps<T, Params>) => {
 	const { scroll, tableContainerRef } = useTableScroll();
@@ -69,6 +70,16 @@ const OltTable = <T extends Record<string, any> = any, Params extends ParamsType
 		...(tableProps.columnsState || {}),
 	});
 
+	const rowClassName = useCallback(() => {
+		return `${stripe ? "olt-table-stripe" : ""} ${rowClickable ? "olt-table-row-clickable" : ""} ${
+			tableProps.rowClassName || ""
+		}`;
+	}, [stripe, rowClickable, tableProps.rowClassName]);
+
+	if (tableProps?.formRef?.current && params?.[1]) {
+		tableProps.formRef.current.setFieldsValue(params[1]);
+	}
+
 	return (
 		<div ref={containerRef} className="page-container">
 			<ProTable<T, Params>
@@ -78,9 +89,7 @@ const OltTable = <T extends Record<string, any> = any, Params extends ParamsType
 				className={`${tableProps.className || ""} olt-table`}
 				scroll={scrollConfig || tableProps.scroll}
 				optionsRender={mergedOptionsRender}
-				rowClassName={`${stripe ? "olt-table-stripe" : ""} ${rowClickable ? "olt-table-row-clickable" : ""} ${
-					tableProps.rowClassName || ""
-				}`}
+				rowClassName={rowClassName}
 				// pagination={false}
 			/>
 

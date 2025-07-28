@@ -18,6 +18,7 @@ const PostList: React.FC = () => {
 	const { tableProps, refresh } = useProTable<IPost, PostQueryParams>(getPosts, {
 		queryKey: [queryKeys.posts],
 		defaultPageSize: 20,
+		useCache: true,
 	});
 
 	const queryClient = useQueryClient();
@@ -96,21 +97,21 @@ const PostList: React.FC = () => {
 			title: "ID",
 			dataIndex: "id",
 			// search: false,
-			width: 200,
+			width: 100,
 		},
 		{
 			title: "标题",
 			dataIndex: "title",
-			copyable: true,
+			// copyable: true,
 			ellipsis: true,
-			width: 400,
+			width: 200,
 		},
 		{
 			title: "内容",
 			dataIndex: "content",
 			ellipsis: true,
 			// search: false,
-			minWidth: 200,
+			minWidth: 400,
 		},
 		{
 			title: "状态",

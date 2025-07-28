@@ -15,7 +15,7 @@ export default defineConfig(({ mode }) => {
 		plugins: [
 			react({
 				babel: {
-					plugins: ["babel-plugin-styled-components"],
+					plugins: ["babel-plugin-styled-components", "react-activation/babel"],
 				},
 			}),
 			vanillaExtractPlugin({

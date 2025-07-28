@@ -104,6 +104,22 @@ const exampleRoutes: AppRouteObject[] = [
 				},
 			},
 			{
+				path: "enhanced-keep-alive",
+				Component: lazy(() => import("@/pages/example/enhanced-keep-alive")),
+				handle: {
+					key: "enhanced-keep-alive",
+					title: "Enhanced KeepAlive",
+				},
+			},
+			{
+				path: "state-cache",
+				Component: lazy(() => import("@/pages/example/state-cache")),
+				handle: {
+					key: "state-cache",
+					title: "状态缓存方案",
+				},
+			},
+			{
 				path: "token_expired",
 				Component: lazy(() => import("@/pages/example/functions/token-expired")),
 				handle: {

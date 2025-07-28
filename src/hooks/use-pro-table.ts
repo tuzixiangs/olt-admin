@@ -1,14 +1,15 @@
 import type { ProFormInstance } from "@ant-design/pro-components";
-import { type UseQueryOptions, useQuery, keepPreviousData } from "@tanstack/react-query";
+import { type UseQueryOptions, keepPreviousData, useQuery } from "@tanstack/react-query";
 import type { TablePaginationConfig, TableProps } from "antd";
 import type { FilterValue, SorterResult, TableCurrentDataSource } from "antd/es/table/interface";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useParamsCache } from "../store/cacheStore";
 
 // 定义服务函数的类型
 type ServiceFunction<TData = any, TParams = any> = (
 	paginationParams: {
-		current: number;
-		pageSize: number;
+		current?: number;
+		pageSize?: number;
 		filters?: any;
 		sorter?: any;
 		extra?: any;
@@ -24,21 +25,39 @@ interface QueryResult<TData = any> {
 
 // 分页参数类型
 interface PaginationParams {
-	current: number;
-	pageSize: number;
+	current?: number;
+	pageSize?: number;
 	filters?: any;
 	sorter?: any;
 	extra?: any;
 }
 
+// PaginationOptions 类型
+interface PaginationOptions
+	extends Omit<
+		TablePaginationConfig,
+		"onChange" | "onShowSizeChange" | "total" | "current" | "pageSize" | "defaultCurrent" | "defaultPageSize"
+	> {}
+
 // Hook 选项类型
 interface UseProTableOptions<TParams = any> {
+	/** 默认每页条数，默认 10 */
 	defaultPageSize?: number;
+	/** 默认查询参数，默认 { current: 1, pageSize: 10 } */
 	defaultParams?: [PaginationParams, TParams?];
-	manual?: boolean; // 是否手动查询，默认 false
-	queryOptions?: Omit<UseQueryOptions<QueryResult, Error>, "queryKey" | "queryFn">; // 支持完整的 useQuery 配置
+	/** 默认分页配置，默认 {} */
+	defaultPaginationOptions?: PaginationOptions;
+	/** 是否使用缓存，默认 false */
+	useCache?: boolean;
+	/** 是否手动查询，默认 false */
+	manual?: boolean;
+	/** 支持完整的 useQuery 配置 */
+	queryOptions?: Omit<UseQueryOptions<QueryResult, Error>, "queryKey" | "queryFn">;
+	/** 查询 key，用于useQuery缓存 */
 	queryKey: any[];
+	/** 查询成功回调 */
 	onSuccess?: (data: QueryResult) => void;
+	/** 查询失败回调 */
 	onError?: (error: any) => void;
 }
 
@@ -77,12 +96,17 @@ export function useProTable<TData = any, TParams = any>(
 	const {
 		defaultPageSize = 10,
 		defaultParams,
+		defaultPaginationOptions,
 		manual = false, // 默认自动查询
+		useCache = false, // 默认不使用缓存
 		queryKey = [],
 		onSuccess,
 		onError,
 		queryOptions,
 	} = options;
+
+	// 使用 params 缓存
+	const { getCachedParams, setCachedParams } = useParamsCache<TParams>();
 
 	const antdService: ServiceFunction<TData, TParams> = async (...args) => {
 		const [{ current, pageSize }, formData = {}] = args;
@@ -102,10 +126,19 @@ export function useProTable<TData = any, TParams = any>(
 		};
 	};
 
-	// 分页和搜索参数状态
+	// 分页和搜索参数状态，优先使用缓存
 	const [params, setParams] = useState<[PaginationParams, TParams?]>(() => {
+		// 如果使用缓存，首先尝试从缓存中获取参数
+		if (useCache) {
+			const cachedParams = getCachedParams();
+			if (cachedParams) {
+				return cachedParams;
+			}
+		}
+
+		// 如果没有缓存，使用默认参数
 		if (defaultParams) {
-			return defaultParams;
+			return [Object.assign({ current: 1, pageSize: defaultPageSize }, defaultParams[0]), defaultParams[1]];
 		}
 		return [
 			{
@@ -116,12 +149,18 @@ export function useProTable<TData = any, TParams = any>(
 		];
 	});
 
-	// 使用 useQuery 获取数据，支持完整配置
+	// 当 params 变化时，更新缓存
+	useEffect(() => {
+		if (useCache) {
+			setCachedParams(params);
+		}
+	}, [params, setCachedParams, useCache]);
+
 	const { data, isLoading, isFetching, refetch, error, isPlaceholderData } = useQuery<QueryResult<TData>, Error>({
 		...queryOptions, // 传递用户的所有 useQuery 配置
 		queryKey: [...queryKey, params[0], params[1]],
 		queryFn: () => antdService(params[0], params[1]),
-		enabled: !manual, // 根据 manual 控制自动查询
+		enabled: !manual,
 		placeholderData: keepPreviousData, // 保持之前的数据，避免分页时数据清空
 	});
 
@@ -258,22 +297,35 @@ export function useProTable<TData = any, TParams = any>(
 	const tableProps = useMemo(
 		() => ({
 			dataSource: data?.list || [],
-			loading: isFetching, // 使用 isFetching 来显示 loading 状态，包括后台刷新
+			loading: isFetching,
 			formRef,
 			onSubmit,
 			onReset,
+			params,
 			pagination: {
-				current: params[0].current,
-				pageSize: params[0].pageSize,
+				current: params[0].current || 1,
+				pageSize: params[0].pageSize || defaultPageSize,
 				total: data?.total || 0,
 				onChange: handlePaginationChange,
 				onShowSizeChange: handleShowSizeChange,
 				showSizeChanger: true,
 				showQuickJumper: true,
+				...defaultPaginationOptions,
 			},
 			onChange: handleTableChange,
 		}),
-		[data, isFetching, params, handlePaginationChange, handleShowSizeChange, handleTableChange, onSubmit, onReset],
+		[
+			data,
+			isFetching,
+			params,
+			handlePaginationChange,
+			handleShowSizeChange,
+			handleTableChange,
+			onSubmit,
+			onReset,
+			defaultPaginationOptions,
+			defaultPageSize,
+		],
 	);
 
 	return {

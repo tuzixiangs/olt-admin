@@ -6,8 +6,8 @@ import { Button } from "@/ui/button";
 import { CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandSeparator } from "@/ui/command";
 import { ScrollArea } from "@/ui/scroll-area";
 import { Text } from "@/ui/typography";
+import { useBoolean } from "ahooks";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useBoolean } from "react-use";
 import { useFilteredNavData } from "../dashboard/nav";
 
 interface SearchItem {
@@ -41,7 +41,7 @@ const HighlightText = ({ text, query }: { text: string; query: string }) => {
 const SearchBar = () => {
 	const { t } = useLocale();
 	const { replace } = useRouter();
-	const [open, setOpen] = useBoolean(false);
+	const [open, { set: setOpen }] = useBoolean(false);
 	const [searchQuery, setSearchQuery] = useState("");
 	const navData = useFilteredNavData();
 
@@ -75,13 +75,13 @@ const SearchBar = () => {
 		const down = (e: KeyboardEvent) => {
 			if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
 				e.preventDefault();
-				setOpen((open: boolean) => !open);
+				setOpen(!open);
 			}
 		};
 
 		document.addEventListener("keydown", down);
 		return () => document.removeEventListener("keydown", down);
-	}, [setOpen]);
+	}, [open, setOpen]);
 
 	const handleSelect = useCallback(
 		(path: string) => {

@@ -3,7 +3,7 @@ import { useParams, useRouter } from "@/routes/hooks";
 import { ProDescriptions } from "@ant-design/pro-components";
 import { Button, Tag } from "antd";
 import { memo } from "react";
-import { useLocation } from "react-use";
+import { useLocation } from "react-router";
 import { getPost } from "./api";
 import type { IPost } from "./types";
 

@@ -76,14 +76,14 @@ const PostList: React.FC = () => {
 					</div>
 				</Tooltip>
 			),
-			width: 400,
+			width: 200,
 		},
 		{
 			title: "内容",
 			dataIndex: "content",
 			ellipsis: true,
 			search: false,
-			width: 400,
+			minWidth: 400,
 		},
 		{
 			title: "状态",

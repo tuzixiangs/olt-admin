@@ -2,13 +2,13 @@ import Logo from "@/assets/icons/ic-logo-static.svg";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { QueryClient } from "@tanstack/react-query";
 import { Analytics as VercelAnalytics } from "@vercel/analytics/react";
+import { AliveScope } from "react-activation";
 import { Helmet, HelmetProvider } from "react-helmet-async";
 import { MotionLazy } from "./components/animate/motion-lazy";
 import { DialogManager } from "./components/dialog";
 import { RouteLoadingProgress } from "./components/loading";
 import Toast from "./components/olt-toast/toast";
 import { GLOBAL_CONFIG } from "./global-config";
-// import { useScrollRestoration } from "./hooks/use-scroll-restoration";
 import { MultiTabsProvider } from "./layouts/dashboard/multi-tabs/providers/multi-tabs-provider";
 import { AntdAdapter } from "./theme/adapter/antd.adapter";
 import { ThemeProvider } from "./theme/theme-provider";
@@ -25,7 +25,6 @@ if (import.meta.env.DEV) {
 }
 
 function App({ children }: { children: React.ReactNode }) {
-	// useScrollRestoration();
 	return (
 		<HelmetProvider>
 			<QueryClientProvider client={new QueryClient()}>
@@ -38,7 +37,9 @@ function App({ children }: { children: React.ReactNode }) {
 					<Toast />
 					<RouteLoadingProgress />
 					<MultiTabsProvider>
-						<MotionLazy>{children}</MotionLazy>
+						<MotionLazy>
+							<AliveScope>{children}</AliveScope>
+						</MotionLazy>
 					</MultiTabsProvider>
 					<DialogManager />
 				</ThemeProvider>
