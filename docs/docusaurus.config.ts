@@ -18,12 +18,12 @@ const config: Config = {
 	url: "https://tuzixiangs.github.io",
 	// Set the /<baseUrl>/ pathname under which your site is served
 	// For GitHub pages deployment, it is often '/<projectName>/'
-	baseUrl: "/refine-admin/",
+	baseUrl: "/olt-admin/",
 
 	// GitHub pages deployment config.
 	// If you aren't using GitHub pages, you don't need these.
 	organizationName: "tuzixiangs", // Usually your GitHub org/user name.
-	projectName: "refine-admin", // Usually your repo name.
+	projectName: "olt-admin", // Usually your repo name.
 
 	onBrokenLinks: "warn",
 	onBrokenMarkdownLinks: "warn",
@@ -44,7 +44,7 @@ const config: Config = {
 					sidebarPath: "./sidebars.ts",
 					// Please change this to your repo.
 					// Remove this to remove the "edit this page" links.
-					editUrl: "https://github.com/tuzixiangs/refine-admin/",
+					editUrl: "https://github.com/tuzixiangs/olt-admin/",
 				},
 				blog: false,
 				theme: {
@@ -85,7 +85,7 @@ const config: Config = {
 					label: "Documentation",
 				},
 				{
-					href: "https://github.com/tuzixiangs/refine-admin",
+					href: "https://github.com/tuzixiangs/olt-admin",
 					label: "GitHub",
 					position: "right",
 				},

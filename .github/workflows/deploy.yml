@@ -42,13 +42,16 @@ jobs:
           cache: "pnpm"
       - name: Setup Pages
         uses: actions/configure-pages@v4
-      - name: Install dependencies
+      - name: Install root dependencies
         run: pnpm install
       - name: Build with Docusaurus
         run: |
           cd docs
           pnpm install
           pnpm run build
+      - name: Add .nojekyll file
+        run: |
+          touch docs/build/.nojekyll
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
