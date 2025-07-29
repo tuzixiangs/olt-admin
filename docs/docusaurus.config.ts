@@ -73,10 +73,10 @@ const config: Config = {
 		image: "img/docusaurus-social-card.jpg",
 		navbar: {
 			title: "OLT Admin",
-			logo: {
-				alt: "OLT Admin Logo",
-				src: "img/logo.svg",
-			},
+			// logo: {
+			// 	alt: "OLT Admin Logo",
+			// 	src: "img/logo.svg",
+			// },
 			items: [
 				{
 					type: "docSidebar",
