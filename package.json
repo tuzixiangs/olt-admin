@@ -12,7 +12,11 @@
 		"lint": "biome check .",
 		"lint:fix": "biome check . --write",
 		"format": "biome format --write .",
-		"type-check": "tsc --noEmit"
+		"type-check": "tsc --noEmit",
+		"docs:dev": "pnpm --filter docs start",
+		"docs:build": "pnpm --filter docs build",
+		"docs:serve": "pnpm --filter docs serve",
+		"docs:deploy": "pnpm --filter docs deploy"
 	},
 	"dependencies": {
 		"@ant-design/cssinjs": "^1.22.0",

@@ -1,4 +1,4 @@
-# OLT Admin Dashboard
+# OLT Admin
 
 基于 React 19 + Vite + TypeScript 构建的现代化管理后台，采用 Feature-Sliced Design 架构模式。
 
@@ -15,7 +15,7 @@
 
 - [**Tailwind CSS**](https://tailwindcss.com/) - 实用优先的 CSS 框架
 - [**Vanilla Extract**](https://vanilla-extract.style/) - 零运行时的 CSS-in-TS
-- [**Framer Motion**](https://www.framer.com/motion/) - 强大的动画库
+- [**Framer Motion**](https://motion.dev/) - 强大的动画库
 - [**shadcn/ui**](https://ui.shadcn.com/) - 基于 Radix UI 的组件库
 - [**Ant Design**](https://ant.design/) - 企业级 UI 设计语言和 React 组件库
 - [**Ant Design Pro Components**](https://pro.ant.design/zh-CN/docs/overview) - 高级组件库
@@ -75,15 +75,21 @@ src/
 
 ```
 posts/
-├─ api.ts          # API 接口定义
-├─ detail-page.tsx # 详情页面组件
-├─ detail.tsx      # 详情展示组件
-├─ edit-page.tsx   # 编辑页面组件
-├─ edit.tsx        # 编辑表单组件
-├─ list-page.tsx   # 列表页面组件
-├─ list.tsx        # 列表组件
-├─ types.ts        # 类型定义
-└─ README.md       # 模块文档
+├── api/
+│   └── index.ts        # API 接口定义
+├── components/
+│   ├── PostDetail.tsx  # 详情组件
+│   └── PostEdit.tsx    # 编辑组件
+├── hooks/
+│   ├── constants.ts    # 常量定义
+│   ├── index.ts        # hooks 导出
+│   ├── mutations.ts    # react-query mutations
+│   └── queries.ts      # react-query queries
+├── detail-page.tsx     # 详情页面（基于路由）
+├── edit-page.tsx       # 编辑页面（基于路由）
+├── list-page.tsx       # 列表页面（基于路由）
+├── list.tsx            # 列表组件（使用模态框）
+├── types.ts            # 类型定义
 ```
 
 ## 🎯 核心特性
@@ -140,11 +146,11 @@ pnpm preview
 
 ## 📚 文档
 
-- [项目结构文档](src/pages/README.md) - Feature-Sliced Design 详细说明
-- [路由系统](src/routes/README.md) - 路由配置和使用说明
-- [Hooks 使用](src/hooks/README.md) - 自定义 Hooks 使用说明
-- [Posts 模块](src/pages/example/curd/posts/README.md) - CRUD 示例详细说明
-- [组件库](src/components/README.md) - 组件使用说明
+通过运行 `pnpm run docs` 来启动文档服务器，查看项目详细文档。
+
+```
+pnpm run docs
+```
 
 ## 🤝 开发指南
 
@@ -196,3 +202,17 @@ pnpm preview
 - 支持亮色和暗色主题
 - 可扩展的主题配置
 - 组件级别的主题适配
+
+## 部署文档到 GitHub Pages
+
+1. 确保已经将项目推送到 GitHub 仓库
+2. 在 GitHub 仓库设置中，转到 `Settings > Pages`
+3. 在 `Source` 部分，选择 `GitHub Actions`
+4. 修改 [/docs/docusaurus.config.ts](file:///Users/tuzi/project/react/olt-admin/docs/docusaurus.config.ts) 中的以下配置：
+   - `organizationName`: 替换为你的 GitHub 用户名或组织名
+   - `url`: 替换为 `https://<你的 GitHub 用户名>.github.io`
+   - `baseUrl`: 替换为 `/olt-admin/` (或你的仓库名称)
+5. 提交更改并推送到 GitHub
+6. GitHub Actions 会自动构建并部署文档到 GitHub Pages
+
+访问地址将会是: `https://<你的 GitHub 用户名>.github.io/olt-admin/`

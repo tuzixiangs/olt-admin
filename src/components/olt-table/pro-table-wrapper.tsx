@@ -1,7 +1,7 @@
 import { useTableScroll } from "@/hooks/use-table-scroll";
 import { type ColumnsState, type ParamsType, type ProColumns, ProTable } from "@ant-design/pro-components";
 // import { Pagination } from "antd";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import ColumnSetting from "./column-setting";
 import type { ColumnStateType, OltTableProps } from "./types";
 
@@ -76,9 +76,11 @@ const OltTable = <T extends Record<string, any> = any, Params extends ParamsType
 		}`;
 	}, [stripe, rowClickable, tableProps.rowClassName]);
 
-	if (tableProps?.formRef?.current && params?.[1]) {
-		tableProps.formRef.current.setFieldsValue(params[1]);
-	}
+	useEffect(() => {
+		if (tableProps?.formRef?.current && params?.[1]) {
+			tableProps.formRef.current.setFieldsValue(params[1]);
+		}
+	}, [params, tableProps?.formRef]);
 
 	return (
 		<div ref={containerRef} className="page-container">

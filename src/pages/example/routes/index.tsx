@@ -104,6 +104,14 @@ const exampleRoutes: AppRouteObject[] = [
 				},
 			},
 			{
+				path: "page-state",
+				Component: lazy(() => import("../page-state-example")),
+				handle: {
+					key: "page-state",
+					title: "页面状态管理",
+				},
+			},
+			{
 				path: "token_expired",
 				Component: lazy(() => import("@/pages/example/functions/token-expired")),
 				handle: {

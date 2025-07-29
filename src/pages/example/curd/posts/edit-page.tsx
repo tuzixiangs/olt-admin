@@ -2,12 +2,12 @@ import { toast } from "@/components/olt-toast";
 import type { TabActionParams } from "@/layouts/dashboard/multi-tabs/types";
 import { useRouter } from "@/routes/hooks";
 import { BetaSchemaForm, type ProFormColumnsType } from "@ant-design/pro-components";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "antd";
 import { memo } from "react";
 import { type LoaderFunctionArgs, useLoaderData, useLocation } from "react-router";
 import { statusOptions } from "../dict";
-import { createPost, getPost, queryKeys, updatePost } from "./api";
+import { fetchPost } from "./api";
+import { useCreatePost, useUpdatePost } from "./hooks";
 import type { IPost } from "./types";
 
 const postFormColumns: ProFormColumnsType<IPost>[] = [
@@ -49,7 +49,7 @@ export const loader = async ({ params }: LoaderFunctionArgs): Promise<TabActionP
 	if (!id) {
 		return { editData: {} as IPost };
 	}
-	const editData = await getPost(id);
+	const editData = await fetchPost(id);
 	// 利用 loader 中的 tabTitle 和 tabAction 动态更新 tab 的 title
 	return { editData, tabTitle: editData?.title || "", tabAction: "join" };
 };
@@ -63,30 +63,22 @@ const PostEditForm = memo(() => {
 	console.log("[ location ] >", location);
 	const { editData } = useLoaderData<{ editData: IPost }>();
 	const { back } = useRouter();
-	const queryClient = useQueryClient();
 
 	// 判断是编辑还是新增
 	const isEditing = !!editData?.id;
 
-	const { mutateAsync, isPending } = useMutation({
-		mutationFn: (formData: IPost) => {
-			if (isEditing && editData) {
-				return updatePost(editData.id.toString(), formData);
-			}
-			return createPost(formData);
-		},
-		onSuccess: () => {
-			toast.success(isEditing ? "更新成功！" : "新增成功！");
-			queryClient.invalidateQueries({ queryKey: [queryKeys.posts] });
-		},
-		onError: (error: any) => {
-			toast.error(`${isEditing ? "更新" : "新增"}失败：${error.message || "未知错误"}`);
-		},
-	});
+	const { mutateAsync, isPending } = isEditing ? useUpdatePost() : useCreatePost();
 
 	const handleFinish = async (formData: IPost) => {
 		try {
-			await mutateAsync(formData);
+			const data = isEditing
+				? {
+						...formData,
+						id: editData?.id || "",
+					}
+				: formData;
+			await mutateAsync(data);
+			toast.success("操作成功");
 			back();
 			return true;
 		} catch (error) {

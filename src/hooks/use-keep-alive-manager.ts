@@ -340,7 +340,7 @@ export function useKeepAliveManager(config: KeepAliveConfig = {}) {
 
 			const debugInfoStr = JSON.stringify(debugInfo);
 			if (debugInfoRef.current !== debugInfoStr) {
-				console.log("[KeepAlive] 配置信息:", debugInfo);
+				// console.log("[KeepAlive] 配置信息:", debugInfo);
 				debugInfoRef.current = debugInfoStr;
 			}
 		}

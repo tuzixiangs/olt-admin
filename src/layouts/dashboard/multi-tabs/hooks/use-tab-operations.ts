@@ -1,7 +1,7 @@
 import { GLOBAL_CONFIG } from "@/global-config";
 import { useKeepAliveManager } from "@/hooks/use-keep-alive-manager";
 import { useRouter } from "@/routes/hooks";
-import { useParamsCacheActions } from "@/store/cacheStore";
+import { useLRUStoreActions } from "@/store/lruStore";
 import { type Dispatch, type SetStateAction, useCallback } from "react";
 import type { KeepAliveTab, TabAction } from "../types";
 
@@ -12,7 +12,47 @@ export function useTabOperations(
 ) {
 	const { push } = useRouter();
 	const { clearCache, getCacheStats } = useKeepAliveManager();
-	const { clearCachedParams, clearCachedParamsByPaths, getCachedPaths } = useParamsCacheActions();
+	const lruActions = useLRUStoreActions();
+
+	/**
+	 * 清除页面相关的所有状态
+	 * 包括页面状态、滚动位置、表单数据等
+	 */
+	const clearPageStates = useCallback(
+		(path: string) => {
+			// 清除页面状态相关的缓存
+			const keysToRemove = [`page_state:${path}`, `scroll_position:${path}`, `form:${path}`];
+
+			for (const key of keysToRemove) {
+				if (lruActions.has(key)) {
+					lruActions.remove(key);
+				}
+			}
+
+			// 清除所有以该路径为前缀的缓存
+			const allKeys = lruActions.getKeys();
+			for (const key of allKeys) {
+				if (key.includes(path)) {
+					lruActions.remove(key);
+				}
+			}
+		},
+		[lruActions],
+	);
+
+	/**
+	 * 批量清除多个路径的页面状态
+	 */
+	const clearMultiplePageStates = useCallback(
+		(paths: string[]) => {
+			for (const path of paths) {
+				if (path) {
+					clearPageStates(path);
+				}
+			}
+		},
+		[clearPageStates],
+	);
 
 	const closeTab = useCallback(
 		(path = activeTabRoutePath) => {
@@ -32,14 +72,16 @@ export function useTabOperations(
 			}
 
 			tempTabs.splice(deleteTabIndex, 1);
+
+			// 清除 KeepAlive 缓存
 			clearCache(path);
 
-			// 清除对应的 params 缓存
-			clearCachedParams(path);
+			// 清除页面状态缓存
+			clearPageStates(path);
 
 			setTabs(tempTabs);
 		},
-		[activeTabRoutePath, push, tabs, setTabs, clearCache, clearCachedParams],
+		[activeTabRoutePath, push, tabs, setTabs, clearCache, clearPageStates],
 	);
 
 	const closeOthersTab = useCallback(
@@ -53,8 +95,8 @@ export function useTabOperations(
 					}
 				}
 
-				// 清除其他标签的 params 缓存
-				clearCachedParamsByPaths(pathsToRemove);
+				// 批量清除其他标签的页面状态
+				clearMultiplePageStates(pathsToRemove);
 
 				return prev.filter((item) => item.path === path);
 			});
@@ -62,68 +104,76 @@ export function useTabOperations(
 				push(path);
 			}
 		},
-		[activeTabRoutePath, push, setTabs, clearCache, clearCachedParamsByPaths],
+		[activeTabRoutePath, push, setTabs, clearCache, clearMultiplePageStates],
 	);
 
 	const closeAll = useCallback(() => {
+		// 获取所有标签路径
+		const allPaths = tabs.map((tab) => tab.path).filter(Boolean) as string[];
+
 		setTabs([]);
 		clearCache("All");
 
-		// 清除所有 params 缓存
-		const allCachedPaths = getCachedPaths();
-		clearCachedParamsByPaths(allCachedPaths);
+		// 批量清除所有页面状态
+		clearMultiplePageStates(allPaths);
 
 		push(GLOBAL_CONFIG.defaultRoute);
-	}, [push, setTabs, clearCache, getCachedPaths, clearCachedParamsByPaths]);
+	}, [push, setTabs, clearCache, clearMultiplePageStates, tabs]);
 
 	const closeLeft = useCallback(
 		(path: string) => {
 			const currentTabIndex = tabs.findIndex((item) => item.path === path);
 			const newTabs = tabs.slice(currentTabIndex);
-			setTabs((prev) => {
-				const pathsToRemove: string[] = [];
-				for (let i = 0; i < currentTabIndex; i++) {
-					clearCache(prev[i].path || "");
-					pathsToRemove.push(prev[i].path || "");
+			const pathsToRemove = tabs
+				.slice(0, currentTabIndex)
+				.map((tab) => tab.path)
+				.filter(Boolean) as string[];
+
+			setTabs(() => {
+				for (const pathToRemove of pathsToRemove) {
+					clearCache(pathToRemove);
 				}
 
-				// 清除左侧标签的 params 缓存
-				clearCachedParamsByPaths(pathsToRemove);
+				// 批量清除左侧标签的页面状态
+				clearMultiplePageStates(pathsToRemove);
 
 				return newTabs;
 			});
 			push(path);
 		},
-		[push, tabs, setTabs, clearCache, clearCachedParamsByPaths],
+		[push, tabs, setTabs, clearCache, clearMultiplePageStates],
 	);
 
 	const closeRight = useCallback(
 		(path: string) => {
 			const currentTabIndex = tabs.findIndex((item) => item.path === path);
 			const newTabs = tabs.slice(0, currentTabIndex + 1);
-			setTabs((prev) => {
-				const pathsToRemove: string[] = [];
-				for (let i = currentTabIndex + 1; i < prev.length; i++) {
-					clearCache(prev[i].path || "");
-					pathsToRemove.push(prev[i].path || "");
+			const pathsToRemove = tabs
+				.slice(currentTabIndex + 1)
+				.map((tab) => tab.path)
+				.filter(Boolean) as string[];
+
+			setTabs(() => {
+				for (const pathToRemove of pathsToRemove) {
+					clearCache(pathToRemove);
 				}
 
-				// 清除右侧标签的 params 缓存
-				clearCachedParamsByPaths(pathsToRemove);
+				// 批量清除右侧标签的页面状态
+				clearMultiplePageStates(pathsToRemove);
 
 				return newTabs;
 			});
 			push(path);
 		},
-		[push, tabs, setTabs, clearCache, clearCachedParamsByPaths],
+		[push, tabs, setTabs, clearCache, clearMultiplePageStates],
 	);
 
 	const refreshTab = useCallback(
 		(path = activeTabRoutePath) => {
 			if (!path) return;
 
-			// 刷新增强缓存管理器中的缓存
-			// refreshCurrentCache(path);
+			// 刷新时清除页面状态，让页面重新初始化
+			clearPageStates(path);
 
 			setTabs((prev) => {
 				const newTabs = [...prev];
@@ -141,7 +191,7 @@ export function useTabOperations(
 				return newTabs;
 			});
 		},
-		[activeTabRoutePath, setTabs],
+		[activeTabRoutePath, setTabs, clearPageStates],
 	);
 
 	const updateTabTitle = useCallback(
@@ -174,17 +224,53 @@ export function useTabOperations(
 				for (let i = 0; i < prev.length; i++) {
 					if (prev[i].path === path) {
 						clearCache(path);
-						// 清除对应的 params 缓存
-						clearCachedParams(path);
+						// 清除页面状态
+						clearPageStates(path);
 					}
 				}
 				return prev.filter((item) => item.path !== path);
 			});
 		},
-		[setTabs, clearCache, clearCachedParams],
+		[setTabs, clearCache, clearPageStates],
 	);
 
+	/**
+	 * 获取页面状态统计信息
+	 */
+	const getPageStateStats = useCallback(() => {
+		const allKeys = lruActions.getKeys();
+		const pageStateKeys = allKeys.filter(
+			(key: string) => key.startsWith("page_state:") || key.startsWith("scroll_position:") || key.startsWith("form:"),
+		);
+
+		return {
+			totalKeys: allKeys.length,
+			pageStateKeys: pageStateKeys.length,
+			pageStates: pageStateKeys.filter((key: string) => key.startsWith("page_state:")).length,
+			scrollPositions: pageStateKeys.filter((key: string) => key.startsWith("scroll_position:")).length,
+			formStates: pageStateKeys.filter((key: string) => key.startsWith("form:")).length,
+			keys: pageStateKeys,
+		};
+	}, [lruActions]);
+
+	/**
+	 * 清除所有页面状态（保留其他类型的缓存）
+	 */
+	const clearAllPageStates = useCallback(() => {
+		const allKeys = lruActions.getKeys();
+		const pageStateKeys = allKeys.filter(
+			(key: string) => key.startsWith("page_state:") || key.startsWith("scroll_position:") || key.startsWith("form:"),
+		);
+
+		for (const key of pageStateKeys) {
+			lruActions.remove(key);
+		}
+
+		return pageStateKeys.length;
+	}, [lruActions]);
+
 	return {
+		// 原有的标签操作
 		closeTab,
 		closeOthersTab,
 		closeAll,
@@ -193,8 +279,15 @@ export function useTabOperations(
 		refreshTab,
 		updateTabTitle,
 		manualCloseTab,
+
 		// 增强缓存管理功能
 		clearCache,
 		getCacheStats,
+
+		// 新增的页面状态管理功能
+		clearPageStates,
+		clearMultiplePageStates,
+		getPageStateStats,
+		clearAllPageStates,
 	};
 }

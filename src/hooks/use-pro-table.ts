@@ -2,8 +2,8 @@ import type { ProFormInstance } from "@ant-design/pro-components";
 import { type UseQueryOptions, keepPreviousData, useQuery } from "@tanstack/react-query";
 import type { TablePaginationConfig, TableProps } from "antd";
 import type { FilterValue, SorterResult, TableCurrentDataSource } from "antd/es/table/interface";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useParamsCache } from "../store/cacheStore";
+import { useCallback, useEffect, useMemo, useRef } from "react";
+import { usePageState } from "./use-page-state";
 
 // 定义服务函数的类型
 type ServiceFunction<TData = any, TParams = any> = (
@@ -105,37 +105,8 @@ export function useProTable<TData = any, TParams = any>(
 		queryOptions,
 	} = options;
 
-	// 使用 params 缓存
-	const { getCachedParams, setCachedParams } = useParamsCache<TParams>();
-
-	const antdService: ServiceFunction<TData, TParams> = async (...args) => {
-		const [{ current, pageSize }, formData = {}] = args;
-
-		const params = {
-			current,
-			pageSize,
-			...formData,
-		};
-
-		const response = await service(params);
-
-		// 转换为 useAntdTable 期望的格式
-		return {
-			list: response.content,
-			total: response.total,
-		};
-	};
-
-	// 分页和搜索参数状态，优先使用缓存
-	const [params, setParams] = useState<[PaginationParams, TParams?]>(() => {
-		// 如果使用缓存，首先尝试从缓存中获取参数
-		if (useCache) {
-			const cachedParams = getCachedParams();
-			if (cachedParams) {
-				return cachedParams;
-			}
-		}
-
+	// 使用页面状态管理替代 params 缓存
+	const getDefaultParams = (): [PaginationParams, TParams?] => {
 		// 如果没有缓存，使用默认参数
 		if (defaultParams) {
 			return [Object.assign({ current: 1, pageSize: defaultPageSize }, defaultParams[0]), defaultParams[1]];
@@ -147,19 +118,39 @@ export function useProTable<TData = any, TParams = any>(
 			},
 			undefined,
 		];
+	};
+
+	// 直接使用页面状态管理，根据 useCache 选项决定是否启用缓存
+	const [params, setParams] = usePageState<[PaginationParams, TParams?]>(getDefaultParams(), {
+		disabled: !useCache,
+		key: `pro-table-params:${window.location.pathname}${window.location.search}`,
 	});
 
-	// 当 params 变化时，更新缓存
-	useEffect(() => {
-		if (useCache) {
-			setCachedParams(params);
-		}
-	}, [params, setCachedParams, useCache]);
+	// 确保 params 始终有值
+	const currentParams = params || getDefaultParams();
+
+	const antdService: ServiceFunction<TData, TParams> = async (...args) => {
+		const [{ current, pageSize }, formData = {}] = args;
+
+		const serviceParams = {
+			current,
+			pageSize,
+			...formData,
+		};
+
+		const response = await service(serviceParams);
+
+		// 转换为 useAntdTable 期望的格式
+		return {
+			list: response.content,
+			total: response.total,
+		};
+	};
 
 	const { data, isLoading, isFetching, refetch, error, isPlaceholderData } = useQuery<QueryResult<TData>, Error>({
 		...queryOptions, // 传递用户的所有 useQuery 配置
-		queryKey: [...queryKey, params[0], params[1]],
-		queryFn: () => antdService(params[0], params[1]),
+		queryKey: [...queryKey, currentParams[0], currentParams[1]],
+		queryFn: () => antdService(currentParams[0], currentParams[1]),
 		enabled: !manual,
 		placeholderData: keepPreviousData, // 保持之前的数据，避免分页时数据清空
 	});
@@ -186,32 +177,42 @@ export function useProTable<TData = any, TParams = any>(
 			// 手动触发查询
 			refetch();
 		},
-		[refetch],
+		[refetch, setParams],
 	);
 
 	// 处理分页变化
-	const handlePaginationChange = useCallback((page: number, pageSize?: number) => {
-		setParams(([paginationParams, searchParams]) => [
-			{
-				...paginationParams,
-				current: page,
-				pageSize: pageSize || paginationParams.pageSize,
-			},
-			searchParams,
-		]);
-	}, []);
+	const handlePaginationChange = useCallback(
+		(page: number, pageSize?: number) => {
+			const [paginationParams, searchParams] = currentParams;
+			const newParams: [PaginationParams, TParams?] = [
+				{
+					...paginationParams,
+					current: page,
+					pageSize: pageSize || paginationParams.pageSize,
+				},
+				searchParams,
+			];
+			setParams(newParams);
+		},
+		[setParams, currentParams],
+	);
 
 	// 处理页面大小变化
-	const handleShowSizeChange = useCallback((_current: number, size: number) => {
-		setParams(([paginationParams, searchParams]) => [
-			{
-				...paginationParams,
-				current: 1, // 改变页面大小时重置到第一页
-				pageSize: size,
-			},
-			searchParams,
-		]);
-	}, []);
+	const handleShowSizeChange = useCallback(
+		(_current: number, size: number) => {
+			const [paginationParams, searchParams] = currentParams;
+			const newParams: [PaginationParams, TParams?] = [
+				{
+					...paginationParams,
+					current: 1, // 改变页面大小时重置到第一页
+					pageSize: size,
+				},
+				searchParams,
+			];
+			setParams(newParams);
+		},
+		[setParams, currentParams],
+	);
 
 	// 处理表格变化（排序、过滤等）
 	const handleTableChange: TableProps<TData>["onChange"] = useCallback(
@@ -221,7 +222,8 @@ export function useProTable<TData = any, TParams = any>(
 			sorter: SorterResult<TData> | SorterResult<TData>[],
 			extra: TableCurrentDataSource<TData>,
 		) => {
-			setParams(([paginationParams, searchParams]) => [
+			const [paginationParams, searchParams] = currentParams;
+			const newParams: [PaginationParams, TParams?] = [
 				{
 					...paginationParams,
 					current: pagination.current || 1,
@@ -231,9 +233,10 @@ export function useProTable<TData = any, TParams = any>(
 					extra,
 				},
 				searchParams,
-			]);
+			];
+			setParams(newParams);
 		},
-		[defaultPageSize],
+		[defaultPageSize, setParams, currentParams],
 	);
 
 	// 设置 formRef表单
@@ -245,7 +248,7 @@ export function useProTable<TData = any, TParams = any>(
 			const newParams: [PaginationParams, TParams?] = [
 				{
 					current: 1, // 搜索时重置到第一页
-					pageSize: params[0].pageSize,
+					pageSize: currentParams[0].pageSize,
 				},
 				values,
 			];
@@ -256,7 +259,7 @@ export function useProTable<TData = any, TParams = any>(
 				refetch();
 			}
 		},
-		[manual, refetch, params],
+		[manual, refetch, currentParams, setParams],
 	);
 
 	// 重置搜索
@@ -274,7 +277,7 @@ export function useProTable<TData = any, TParams = any>(
 		if (manual) {
 			refetch();
 		}
-	}, [defaultPageSize, manual, refetch]);
+	}, [defaultPageSize, manual, refetch, setParams]);
 
 	// tableProps里面的搜索和提交
 	const onSubmit = useCallback(
@@ -301,10 +304,10 @@ export function useProTable<TData = any, TParams = any>(
 			formRef,
 			onSubmit,
 			onReset,
-			params,
+			params: currentParams,
 			pagination: {
-				current: params[0].current || 1,
-				pageSize: params[0].pageSize || defaultPageSize,
+				current: currentParams[0].current || 1,
+				pageSize: currentParams[0].pageSize || defaultPageSize,
 				total: data?.total || 0,
 				onChange: handlePaginationChange,
 				onShowSizeChange: handleShowSizeChange,
@@ -317,7 +320,7 @@ export function useProTable<TData = any, TParams = any>(
 		[
 			data,
 			isFetching,
-			params,
+			currentParams,
 			handlePaginationChange,
 			handleShowSizeChange,
 			handleTableChange,
@@ -336,7 +339,7 @@ export function useProTable<TData = any, TParams = any>(
 		},
 		refresh: handleRefresh,
 		run,
-		params,
+		params: currentParams,
 		isPlaceholderData,
 		isFetching,
 		isLoading,

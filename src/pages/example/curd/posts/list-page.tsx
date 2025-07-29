@@ -2,7 +2,6 @@ import { dialog } from "@/components/olt-modal";
 import OltTable from "@/components/olt-table";
 import { useProTable } from "@/hooks/use-pro-table";
 import type { ProColumns } from "@ant-design/pro-components";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button, Tag } from "antd";
 import type React from "react";
 
@@ -10,28 +9,19 @@ import { toast } from "@/components/olt-toast";
 import { useRouter } from "@/routes/hooks";
 import { Tooltip } from "antd";
 import { statusOptions } from "../dict";
-import { deletePost, getPosts, queryKeys } from "./api";
+import { fetchPosts } from "./api/index";
+import { queryKeys, useDeletePost } from "./hooks";
 import type { IPost, PostQueryParams } from "./types";
 
 const PostList: React.FC = () => {
-	const { tableProps, refresh } = useProTable<IPost, PostQueryParams>(getPosts, {
-		queryKey: [queryKeys.posts],
+	const { tableProps, refresh } = useProTable<IPost, PostQueryParams>(fetchPosts, {
+		queryKey: [queryKeys.lists()],
 		defaultPageSize: 10,
 	});
 
 	const { push } = useRouter();
 
-	const queryClient = useQueryClient();
-
-	const { mutateAsync: deleteMutate, isPending: isDeleting } = useMutation({
-		mutationFn: (id: string) => deletePost(id),
-		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: [queryKeys.posts] });
-		},
-		onError: (error: any) => {
-			toast.error(`删除失败：${error.message || "未知错误"}`);
-		},
-	});
+	const { mutateAsync: deleteMutate, isPending: isDeleting } = useDeletePost();
 
 	// 显示详情
 	const showDetail = (record: IPost) => {

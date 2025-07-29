@@ -4,7 +4,7 @@ import { ProDescriptions } from "@ant-design/pro-components";
 import { Button, Tag } from "antd";
 import { memo } from "react";
 import { useLocation } from "react-router";
-import { getPost } from "./api";
+import { fetchPost } from "./api";
 import type { IPost } from "./types";
 
 /**
@@ -23,7 +23,7 @@ const PostDetail = memo(() => {
 			<ProDescriptions
 				request={async () => {
 					try {
-						const res = await getPost(id?.toString() || "");
+						const res = await fetchPost(id?.toString() || "");
 						// 利用 hook 更新 tab 的 title
 						updateTabTitle(pathname, res.title, "join");
 						return {
