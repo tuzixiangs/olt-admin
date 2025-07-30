@@ -14,21 +14,21 @@
 
 ### 🏁 快速开始
 
-- [安装指南](./getting-started/installation) - 环境准备和项目安装
-- [快速开始](./getting-started/quick-start) - 5分钟上手指南
-- [项目结构](./getting-started/project-structure) - 了解项目组织方式
+- [安装指南](./getting-started/installation.md) - 环境准备和项目安装
+- [快速开始](./getting-started/quick-start.md) - 5分钟上手指南
+- [项目结构](./getting-started/project-structure.md) - 了解项目组织方式
 
 ### 🏗️ 架构设计
 
-- [Feature-Sliced Design](./architecture/feature-sliced-design) - 核心架构模式
-- [技术栈](./architecture/tech-stack) - 技术选型和原因
-- [设计原则](./architecture/design-principles) - 代码组织原则
+- [Feature-Sliced Design](./architecture/feature-sliced-design.md) - 核心架构模式
+- [技术栈](./architecture/tech-stack.md) - 技术选型和原因
+- [设计原则](./architecture/design-principles.md) - 代码组织原则
 
 ### 💻 开发指南
 
-- [代码风格](./development/code-style) - 编码规范和最佳实践
-- [路由系统](./development/routing) - 路由配置和使用
-- [状态管理](./development/state-management) - 状态管理方案
+- [代码风格](./development/code-style.md) - 编码规范和最佳实践
+- [路由系统](./development/routing.md) - 路由配置和使用
+- [状态管理](./development/state-management.md) - 状态管理方案
 
 ### 🧩 组件库
 
