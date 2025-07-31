@@ -158,7 +158,7 @@ const ToasterStyleWrapper = styled.div`
     /* Loading */
     &[data-type="loading"] [data-icon] .sonner-loader[data-visible="true"] {
       margin-left: 6px;
-      color: ${themeVars.colors.palette.link.default};
+      color: ${themeVars.colors.palette.primary.default};
       position: absolute;
     }
 
@@ -175,7 +175,7 @@ const ToasterStyleWrapper = styled.div`
     }
 
     [data-description] {
-      color: ${themeVars.colors.text.textSecondary};
+      color: ${themeVars.colors.text.primary};
     }
   }
 `;
