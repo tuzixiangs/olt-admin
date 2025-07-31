@@ -123,6 +123,7 @@ export default function EnhancedKeepAliveExample() {
 	const [activeDemo, setActiveDemo] = useSessionStorageState<string>("enhanced-keep-alive-demo", {
 		defaultValue: "custom",
 	});
+	console.log("[ EnhancedKeepAliveExample ] >");
 	const [customConfig, setCustomConfig] = useState({
 		strategy: "always" as CacheStrategy,
 		maxCacheCount: 5,

@@ -13,6 +13,7 @@ interface FormData {
 }
 
 export default function PageStateExample() {
+	console.log("[ PageStateExample ] >");
 	// 使用页面状态管理
 	const [pageData, setPageData] = usePageState<{ counter: number; lastAction: string }>({
 		counter: 0,
@@ -110,7 +111,7 @@ export default function PageStateExample() {
 
 			<Space direction="vertical" size="large" style={{ width: "100%" }}>
 				{/* 页面状态示例 */}
-				<Card title="页面状态管理 (usePageState)" bordered={false}>
+				<Card title="页面状态管理 (usePageState)">
 					<Space direction="vertical" size="middle" style={{ width: "100%" }}>
 						<div>
 							<Text strong>持久化计数器: </Text>
@@ -142,7 +143,7 @@ export default function PageStateExample() {
 				</Card>
 
 				{/* 滚动位置示例 */}
-				<Card title="滚动位置管理 (usePageScrollPosition)" bordered={false}>
+				<Card title="滚动位置管理 (usePageScrollPosition)">
 					<Space direction="vertical" size="middle" style={{ width: "100%" }}>
 						<div>
 							<Text>当前保存的滚动位置: </Text>
@@ -236,7 +237,7 @@ export default function PageStateExample() {
 				</Card>
 
 				{/* 使用说明 */}
-				<Card title="使用说明" bordered={false}>
+				<Card title="使用说明">
 					<Space direction="vertical" size="middle" style={{ width: "100%" }}>
 						<div>
 							<Title level={4}>功能特点:</Title>

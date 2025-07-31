@@ -57,6 +57,7 @@ export function usePageState<T>(
 /**
  * 页面滚动位置管理 Hook
  * 专门用于管理页面滚动位置的保存和恢复
+ * 在 hook 执行时检测保存的滚动位置并自动恢复，然后开始监听滚动事件
  *
  * @param options 配置选项
  * @returns [scrollY, setScrollY, restoreScroll]
@@ -82,135 +83,71 @@ export function usePageScrollPosition(
 		key?: string;
 		/** 是否自动监听滚动事件，默认 true */
 		autoListen?: boolean;
-		/** 是否在路由切换时自动恢复滚动位置，默认 true */
-		autoRestore?: boolean;
 		/** 滚动事件节流时间，默认 200ms */
 		throttleMs?: number;
 		/** 是否禁用缓存功能，默认 false */
 		disabled?: boolean;
-		/** 用户滚动检测超时时间，默认 1000ms */
-		userScrollTimeout?: number;
 		/** 手动调用时的滚动行为，默认 smooth */
 		manualScrollBehavior?: ScrollBehavior;
-		/** 自动恢复时的滚动行为，默认 instant */
-		autoScrollBehavior?: ScrollBehavior;
+		/** 初始恢复时的滚动行为，默认 smooth */
+		restoreScrollBehavior?: ScrollBehavior;
 	} = {},
 ) {
 	const location = useLocation();
 	const {
 		key = location.pathname,
 		autoListen = true,
-		autoRestore = true,
 		throttleMs = 200,
 		disabled = false,
-		userScrollTimeout = 1000,
 		manualScrollBehavior = "smooth",
-		autoScrollBehavior = "smooth",
+		restoreScrollBehavior = "smooth",
 	} = options;
 
-	// 用户交互状态
-	const [isUserScrolling, setIsUserScrolling] = useState(false);
-	const userScrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+	// 程序化滚动标志，用于区分程序触发的滚动和用户手动滚动
+	const isProgrammaticScrollRef = useRef(false);
+
+	// 是否已经完成初始滚动恢复
+	const [isRestoreCompleted, setIsRestoreCompleted] = useState(false);
 
 	// 恢复滚动位置的通用函数
-	const createRestoreScroll = (scrollY: number | undefined, behavior: ScrollBehavior = manualScrollBehavior) => {
-		return () => {
-			const targetScrollY = scrollY || 0;
-			if (targetScrollY && targetScrollY > 0) {
-				// 对于手动调用，不检查 isUserScrolling，允许用户主动触发平滑滚动
-				// 对于自动恢复，检查 isUserScrolling，避免冲突
-				const shouldScroll = behavior === manualScrollBehavior || !isUserScrolling;
+	const createRestoreScroll = useCallback(
+		(scrollY: number | undefined, behavior: ScrollBehavior = manualScrollBehavior) => {
+			return () => {
+				const targetScrollY = scrollY || 0;
+				if (targetScrollY && targetScrollY > 0) {
+					// 标记为程序化滚动
+					isProgrammaticScrollRef.current = true;
 
-				if (shouldScroll) {
 					requestAnimationFrame(() => {
 						window.scrollTo({
 							top: targetScrollY,
 							behavior: behavior,
 						});
+
+						// 根据滚动行为设置不同的延迟时间来清除标志
+						const clearDelay = behavior === "smooth" ? 1000 : 100; // smooth 滚动需要更长时间
+
+						setTimeout(() => {
+							isProgrammaticScrollRef.current = false;
+						}, clearDelay);
 					});
 				}
-			}
-		};
-	};
-
-	// 自动监听滚动事件的通用函数
-	const useScrollListener = (
-		setScrollY: (value: number | ((prev: number | undefined) => number)) => void,
-		throttleMsValue: number,
-	) => {
-		const handleUserScrollEnd = useCallback(() => {
-			setIsUserScrolling(false);
-		}, []);
-
-		useEffect(() => {
-			if (!autoListen) return;
-
-			let timeoutId: NodeJS.Timeout;
-
-			const handleScroll = () => {
-				// 标记用户正在滚动
-				setIsUserScrolling(true);
-
-				// 清除之前的超时
-				if (userScrollTimeoutRef.current) {
-					clearTimeout(userScrollTimeoutRef.current);
-				}
-
-				// 设置用户滚动结束检测
-				userScrollTimeoutRef.current = setTimeout(handleUserScrollEnd, userScrollTimeout);
-
-				// 节流处理保存滚动位置
-				clearTimeout(timeoutId);
-				timeoutId = setTimeout(() => {
-					setScrollY(window.scrollY);
-				}, throttleMsValue);
 			};
-
-			window.addEventListener("scroll", handleScroll, { passive: true });
-
-			return () => {
-				window.removeEventListener("scroll", handleScroll);
-				clearTimeout(timeoutId);
-				if (userScrollTimeoutRef.current) {
-					clearTimeout(userScrollTimeoutRef.current);
-				}
-			};
-		}, [setScrollY, throttleMsValue, handleUserScrollEnd]);
-	};
-
-	// 自动恢复滚动位置的通用函数
-	const useAutoRestore = (scrollY: number | undefined) => {
-		useEffect(() => {
-			if (!autoRestore) return;
-
-			// 延迟恢复，确保页面内容已加载，并且用户没有在滚动
-			const timer = setTimeout(() => {
-				if (!isUserScrolling) {
-					// 自动恢复使用 instant 行为，避免与用户操作冲突
-					const autoRestoreScroll = createRestoreScroll(scrollY, autoScrollBehavior);
-					autoRestoreScroll();
-				}
-			}, 300); // 增加延迟时间，给页面更多加载时间
-
-			return () => clearTimeout(timer);
-		}, [scrollY]);
-	};
+		},
+		[manualScrollBehavior],
+	);
 
 	if (disabled) {
-		// 在禁用模式下，只使用 useState
+		// 禁用模式下，不进行任何滚动监听和处理，只返回基本的状态管理
 		const [scrollY, setScrollY] = useState<number>(0);
 		const removeScrollY = useCallback(() => {
 			setScrollY(0);
 		}, []);
 
-		// 恢复滚动位置 - 手动调用时使用平滑滚动
-		const restoreScroll = createRestoreScroll(scrollY, manualScrollBehavior);
-
-		// 自动监听滚动事件
-		useScrollListener(setScrollY, throttleMs);
-
-		// 路由切换时自动恢复滚动位置
-		useAutoRestore(scrollY);
+		// 提供一个空的恢复函数，保持 API 一致性
+		const restoreScroll = useCallback(() => {
+			// 禁用模式下不执行任何操作
+		}, []);
 
 		return [scrollY, setScrollY, restoreScroll, removeScrollY] as const;
 	}
@@ -221,11 +158,61 @@ export function usePageScrollPosition(
 	// 恢复滚动位置 - 手动调用时使用平滑滚动
 	const restoreScroll = createRestoreScroll(scrollY, manualScrollBehavior);
 
-	// 自动监听滚动事件
-	useScrollListener(setScrollY, throttleMs);
+	// 初始化时检测并恢复保存的滚动位置
+	useEffect(() => {
+		const savedScrollY = scrollY || 0;
+		if (savedScrollY > 0) {
+			// 延迟恢复，确保页面内容已加载
+			const timer = setTimeout(() => {
+				const initialRestoreScroll = createRestoreScroll(savedScrollY, restoreScrollBehavior);
+				initialRestoreScroll();
 
-	// 路由切换时自动恢复滚动位置
-	useAutoRestore(scrollY);
+				// 标记恢复完成，延迟一点时间确保滚动完成
+				setTimeout(
+					() => {
+						setIsRestoreCompleted(true);
+					},
+					restoreScrollBehavior === "smooth" ? 1000 : 100,
+				);
+			}, 100);
+
+			return () => clearTimeout(timer);
+		}
+
+		// 没有保存的滚动位置，直接标记恢复完成
+		setIsRestoreCompleted(true);
+	}, [scrollY, restoreScrollBehavior, createRestoreScroll]);
+
+	// 滚动监听 - 只在恢复完成后开始监听
+	useEffect(() => {
+		if (!autoListen || !isRestoreCompleted) return;
+
+		let timeoutId: NodeJS.Timeout;
+
+		const handleScroll = () => {
+			// 如果是程序化滚动，跳过状态更新
+			if (isProgrammaticScrollRef.current) {
+				return;
+			}
+
+			// 节流处理保存滚动位置
+			clearTimeout(timeoutId);
+			timeoutId = setTimeout(() => {
+				// 再次检查是否为程序化滚动，避免延迟执行时的状态更新
+				if (!isProgrammaticScrollRef.current) {
+					console.log("[ window.scrollY ] >", window.scrollY);
+					setScrollY(window.scrollY);
+				}
+			}, throttleMs);
+		};
+
+		window.addEventListener("scroll", handleScroll, { passive: true });
+
+		return () => {
+			window.removeEventListener("scroll", handleScroll);
+			clearTimeout(timeoutId);
+		};
+	}, [throttleMs, autoListen, isRestoreCompleted, setScrollY]);
 
 	return [scrollY || 0, setScrollY, restoreScroll, removeScrollY] as const;
 }
