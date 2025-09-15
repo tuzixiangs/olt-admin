@@ -101,7 +101,7 @@ const PostList: React.FC = () => {
 			dataIndex: "content",
 			ellipsis: true,
 			// search: false,
-			minWidth: 400,
+			width: 400,
 		},
 		{
 			title: "状态",

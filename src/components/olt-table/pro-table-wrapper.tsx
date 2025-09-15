@@ -2,7 +2,9 @@ import { useTableScroll } from "@/hooks/use-table-scroll";
 import { type ColumnsState, type ParamsType, type ProColumns, ProTable } from "@ant-design/pro-components";
 // import { Pagination } from "antd";
 import { useCallback, useEffect, useRef, useState } from "react";
+import type { ResizeCallbackData } from "react-resizable";
 import ColumnSetting from "./column-setting";
+import ResizableHeader from "./components/ResizableHeader";
 import type { ColumnStateType, OltTableProps } from "./types";
 
 const OltTable = <T extends Record<string, any> = any, Params extends ParamsType = Record<string, any>>({
@@ -65,7 +67,7 @@ const OltTable = <T extends Record<string, any> = any, Params extends ParamsType
 	};
 
 	// 列设置相关状态
-	const [columns] = useState<ProColumns[]>(tableProps.columns || []);
+	const [columns, setColumns] = useState<ProColumns[]>(tableProps.columns || []);
 	const [columnsState, setColumnsState] = useState<ColumnStateType>({
 		...(tableProps.columnsState || {}),
 	});
@@ -75,6 +77,28 @@ const OltTable = <T extends Record<string, any> = any, Params extends ParamsType
 			tableProps.rowClassName || ""
 		}`;
 	}, [stripe, rowClickable, tableProps.rowClassName]);
+
+	const handleResize =
+		(index: number): ((e: React.SyntheticEvent, data: ResizeCallbackData) => void) =>
+		(_, { size }) => {
+			setColumns((prevColumns) => {
+				const newColumns = [...prevColumns];
+				newColumns[index] = {
+					...newColumns[index],
+					width: size.width,
+				};
+				return newColumns;
+			});
+		};
+
+	const mergedColumns = columns.map((col, index) => ({
+		...col,
+		onHeaderCell: (column: any) => ({
+			width: column.width,
+			// 传递重命名后的 onColumnResize prop
+			onColumnResize: handleResize(index),
+		}),
+	}));
 
 	useEffect(() => {
 		if (tableProps?.formRef?.current && params?.[1]) {
@@ -86,8 +110,14 @@ const OltTable = <T extends Record<string, any> = any, Params extends ParamsType
 		<div ref={containerRef} className="page-container">
 			<ProTable<T, Params>
 				{...tableProps}
+				components={{
+					header: {
+						cell: ResizableHeader,
+					},
+				}}
+				virtual
 				columnsState={columnsState}
-				columns={columns}
+				columns={mergedColumns}
 				className={`${tableProps.className || ""} olt-table`}
 				scroll={scrollConfig || tableProps.scroll}
 				optionsRender={mergedOptionsRender}
