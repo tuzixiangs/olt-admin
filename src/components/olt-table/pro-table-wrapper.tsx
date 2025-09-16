@@ -1,4 +1,4 @@
-import { useTableScroll } from "@/hooks/use-table-scroll";
+import { useFlexTableHeight } from "@/hooks/use-flex-table-height";
 import { type ColumnsState, type ParamsType, type ProColumns, ProTable } from "@ant-design/pro-components";
 // import { Pagination } from "antd";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -17,13 +17,13 @@ const OltTable = <T extends Record<string, any> = any, Params extends ParamsType
 	params,
 	...tableProps
 }: OltTableProps<T, Params>) => {
-	const { scroll, tableContainerRef } = useTableScroll();
+	const { containerRef: flexContainerRef } = useFlexTableHeight();
 	const staticRef = useRef<HTMLDivElement>(null);
 
 	// 根据 autoHeight 决定使用哪个 ref 和 scroll
-	const containerRef = autoHeight ? tableContainerRef : staticRef;
+	const containerRef = autoHeight ? flexContainerRef : staticRef;
 
-	const scrollConfig = autoHeight ? { ...scroll, ...tableProps.scroll } : { x: "max-content", ...tableProps.scroll };
+	const scrollConfig = autoHeight ? undefined : { x: "max-content", ...tableProps.scroll };
 
 	// 生成默认存储键名
 	const defaultStorageKey = columnStorageKey || `olt-table-${window.location.pathname}`;
@@ -115,7 +115,6 @@ const OltTable = <T extends Record<string, any> = any, Params extends ParamsType
 						cell: ResizableHeader,
 					},
 				}}
-				virtual
 				columnsState={columnsState}
 				columns={mergedColumns}
 				className={`${tableProps.className || ""} olt-table`}

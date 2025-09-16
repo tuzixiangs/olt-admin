@@ -88,6 +88,8 @@ const PostList: React.FC = () => {
 			dataIndex: "id",
 			// search: false,
 			width: 100,
+			ellipsis: true,
+			fixed: "left",
 		},
 		{
 			title: "标题",
@@ -124,6 +126,7 @@ const PostList: React.FC = () => {
 			title: "操作",
 			dataIndex: "action",
 			valueType: "option",
+			fixed: "right",
 			width: 150,
 			render: (_, record) => (
 				<div>

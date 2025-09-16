@@ -20,8 +20,6 @@ export type ColumnStateType = {
 export interface OltTableProps<T = any, Params = Record<string, any>> extends ProTableProps<T, Params> {
 	/**
 	 * 是否启用自动高度
-	 * TODO: [待解决，目前没有完美解决办法]('https://github.com/ant-design/ant-design/issues/23974')
-	 * @default false
 	 */
 	autoHeight?: boolean;
 	/**
