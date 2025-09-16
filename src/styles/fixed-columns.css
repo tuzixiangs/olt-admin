@@ -1,0 +1,41 @@
+/* 固定列层级优化 - 解决表头被遮盖问题 */
+
+/* 固定列的表头 - 更高层级，避免被粘性表头遮盖 */
+.page-container .ant-table-thead > tr > th.ant-table-cell-fix-left {
+	z-index: 12 !important;
+}
+
+.page-container .ant-table-thead > tr > th.ant-table-cell-fix-right {
+	z-index: 12 !important;
+}
+
+/* 固定列的内容区域 */
+.page-container .ant-table-tbody > tr > td.ant-table-cell-fix-left {
+	z-index: 9 !important;
+}
+
+.page-container .ant-table-tbody > tr > td.ant-table-cell-fix-right {
+	z-index: 9 !important;
+}
+
+/* 特殊情况：同时具有固定位置和粘性位置的表头 */
+.page-container .ant-table-thead > tr > th.ant-table-cell-fix-left.ant-table-cell-sticky,
+.page-container .ant-table-thead > tr > th.ant-table-cell-fix-right.ant-table-cell-sticky {
+	z-index: 13 !important; /* 最高层级 */
+}
+
+/* 为了确保样式生效，还需要增加更特异性的选择器 */
+.page-container .olt-table .ant-table-thead > tr > th.ant-table-cell-fix-left {
+	z-index: 12 !important;
+	position: sticky !important;
+}
+
+.page-container .olt-table .ant-table-thead > tr > th.ant-table-cell-fix-right {
+	z-index: 12 !important;
+	position: sticky !important;
+}
+
+/* 确保粘性表头的层级低于固定列 */
+.page-container .ant-table-thead > tr > th.ant-table-cell-sticky:not(.ant-table-cell-fix-left):not(.ant-table-cell-fix-right) {
+	z-index: 11 !important;
+}

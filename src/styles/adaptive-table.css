@@ -1,0 +1,183 @@
+#olt-layout-main {
+	height: calc(100vh - var(--layout-header-height));
+	overflow: hidden;
+}
+
+.multi-tab-enabled #olt-layout-main {
+	height: calc(100vh - var(--layout-header-height) - 32px);
+}
+
+.adaptive-table-container {
+	height: 100% !important;
+	display: flex !important;
+	flex-direction: column !important;
+	overflow: hidden !important;
+}
+
+.adaptive-table-container .ant-pro-table {
+	flex: 1 !important;
+	height: 100% !important;
+	display: flex !important;
+	flex-direction: column !important;
+	overflow: hidden !important;
+}
+
+.adaptive-table-container .ant-pro-card.ant-pro-table-search {
+	flex: none !important;
+	height: auto !important;
+	overflow: visible !important;
+}
+
+.adaptive-table-container .ant-pro-card:not(.ant-pro-table-search) {
+	height: 100% !important;
+	display: flex !important;
+	flex-direction: column !important;
+	flex: 1 !important;
+	overflow: hidden !important;
+}
+
+.adaptive-table-container .ant-pro-card .ant-pro-card-body {
+	height: 100% !important;
+	display: flex !important;
+	flex-direction: column !important;
+	flex: 1 !important;
+	padding: 0 !important;
+	overflow: hidden !important;
+}
+
+.adaptive-table-container .ant-pro-table-search {
+	flex: none !important;
+	z-index: 10;
+}
+
+.adaptive-table-container .ant-pro-table-list-toolbar {
+	flex: none !important;
+	z-index: 10;
+}
+
+.adaptive-table-container .ant-table-wrapper {
+	height: 100% !important;
+	display: flex !important;
+	flex-direction: column !important;
+	flex: 1 !important;
+	overflow: hidden !important;
+	min-height: 0 !important; /* 强制 flex 收缩 */
+}
+
+.adaptive-table-container .ant-spin-nested-loading {
+	height: 100% !important;
+	display: flex !important;
+	flex-direction: column !important;
+	flex: 1 !important;
+	overflow: hidden !important;
+	min-height: 0 !important;
+}
+
+.adaptive-table-container .ant-spin-container {
+	height: 100% !important;
+	display: flex !important;
+	flex-direction: column !important;
+	flex: 1 !important;
+	overflow: hidden !important;
+	min-height: 0 !important;
+}
+
+.adaptive-table-container .ant-table {
+	flex: 1 !important;
+	overflow: hidden !important;
+	display: flex !important;
+	flex-direction: column !important;
+	height: 100% !important;
+	min-height: 0 !important;
+}
+
+.adaptive-table-container .ant-table-container {
+	height: 100% !important;
+	display: flex !important;
+	flex-direction: column !important;
+	flex: 1 !important;
+	overflow: auto !important;
+	min-height: 0 !important;
+}
+
+.adaptive-table-container .ant-table-content {
+	flex: none !important;
+	min-height: min-content !important;
+}
+
+.adaptive-table-container .ant-table-header {
+	flex: none !important;
+	overflow: hidden !important;
+	z-index: 10;
+}
+
+.adaptive-table-container .ant-table-thead > tr > th {
+	position: sticky !important;
+	top: 0 !important;
+	z-index: 15 !important;
+}
+
+/* 固定列的表头需要更高的层级 */
+.adaptive-table-container .ant-table-thead > tr > th.ant-table-cell-fix-left,
+.adaptive-table-container .ant-table-thead > tr > th.ant-table-cell-fix-right {
+	z-index: 20 !important;
+}
+
+/* 固定列的表头在最左边和最右边时的特殊层级 */
+.adaptive-table-container .ant-table-thead > tr > th.ant-table-cell-fix-left-first,
+.adaptive-table-container .ant-table-thead > tr > th.ant-table-cell-fix-left-last,
+.adaptive-table-container .ant-table-thead > tr > th.ant-table-cell-fix-right-first,
+.adaptive-table-container .ant-table-thead > tr > th.ant-table-cell-fix-right-last {
+	z-index: 21 !important;
+}
+
+/* 固定列的数据单元格也需要合适的层级 */
+.adaptive-table-container .ant-table-tbody > tr > td.ant-table-cell-fix-left,
+.adaptive-table-container .ant-table-tbody > tr > td.ant-table-cell-fix-right {
+	z-index: 10 !important;
+}
+
+.adaptive-table-container .ant-table-tbody {
+	height: auto !important;
+}
+
+.adaptive-table-container .ant-table-tbody {
+	height: auto !important;
+}
+
+.adaptive-table-container .ant-table-tbody-virtual-holder {
+	flex: 1 !important;
+	overflow: auto !important;
+	height: 0 !important;
+	min-height: 0 !important;
+}
+
+.adaptive-table-container .ant-table-tbody-virtual-holder .ant-table-tbody {
+	height: 100% !important;
+}
+
+.adaptive-table-container .ant-pagination {
+	flex: none !important;
+	margin-top: 16px !important;
+	margin-bottom: 0 !important;
+	z-index: 10;
+}
+
+.page-container {
+	height: 100% !important;
+	display: flex !important;
+	flex-direction: column !important;
+	overflow: hidden !important;
+}
+
+.adaptive-table-container .ant-pro-table-list-toolbar + .ant-table-wrapper {
+	flex: 1 !important;
+	height: 0 !important;
+	min-height: 0 !important;
+}
+
+.adaptive-table-container .ant-pro-table-search + .ant-pro-card {
+	flex: 1 !important;
+	height: 0 !important;
+	min-height: 0 !important;
+}
