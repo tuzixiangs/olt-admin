@@ -47,5 +47,6 @@
     "eslint.config.mjs": ".eslintignore,.prettierignore,.stylelintignore,.commitlintrc.*,.prettierrc.*,stylelint.config.*,.lintstagedrc.mjs,cspell.json,lefthook.yml",
     "tailwind.config.mjs": "postcss.*",
   },
-  "editor.colorDecorators": true
+  "editor.colorDecorators": true,
+  "kiroAgent.configureMCP": "Disabled"
 }
