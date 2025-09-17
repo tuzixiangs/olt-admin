@@ -197,9 +197,15 @@ export const AntdAdapter: UILibraryAdapter = ({ mode, children }) => {
 		<ConfigProvider
 			// 设置本地化配置
 			locale={language.antdLocal}
-			// 配置主题算法、token 和组件样式
-			theme={{ algorithm, token, components }}
-			// 配置标签样式
+			theme={{
+				algorithm,
+				token,
+				components,
+				// 启用 CSS 变量支持
+				cssVar: {
+					prefix: "ant",
+				},
+			}}
 			tag={{
 				style: {
 					borderRadius: removePx(baseThemeTokens.borderRadius.md), // 标签圆角

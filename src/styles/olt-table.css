@@ -1,9 +1,9 @@
 /* 导入列设置样式 */
 
 .olt-table-stripe:nth-child(odd) {
-	background-color: var(--colors-palette-gray-200);
+	background-color: var(--ant-table-footer-bg);
 	td {
-		background-color: var(--colors-palette-gray-200) !important;
+		background-color: var(--ant-table-footer-bg) !important;
 	}
 }
 .olt-table-row-clickable {

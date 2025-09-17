@@ -90,6 +90,19 @@
 	overflow: auto;
 	min-height: 0;
 }
+.adaptive-table-container .ant-table-bordered {
+	border-bottom: 1px solid var(--ant-table-border-color);
+	border-right: 1px solid var(--ant-table-border-color);
+}
+
+.adaptive-table-container .ant-table-thead > tr > th:last-child,
+.olt-table .ant-table-tbody > tr > td:last-child {
+  border-right: none !important;
+}
+
+.adaptive-table-container .ant-table-cell-fix-right:last-child {
+  border-right: none !important;
+}
 
 .adaptive-table-container .ant-table-content {
 	flex: none;
