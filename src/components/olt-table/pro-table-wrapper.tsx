@@ -1,8 +1,8 @@
 import { useFlexTableHeight } from "@/hooks/use-flex-table-height";
 import { type ColumnsState, type ParamsType, type ProColumns, ProTable } from "@ant-design/pro-components";
+import { debounce } from "lodash-es";
 // import { Pagination } from "antd";
-import { useCallback, useEffect, useRef, useState } from "react";
-import type { ResizeCallbackData } from "react-resizable";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import ColumnSetting from "./column-setting";
 import ResizableHeader from "./components/ResizableHeader";
 import type { ColumnStateType, OltTableProps } from "./types";
@@ -72,39 +72,63 @@ const OltTable = <T extends Record<string, any> = any, Params extends ParamsType
 		...(tableProps.columnsState || {}),
 	});
 
+	// 防抖更新列宽，避免频繁更新状态
+	const debouncedUpdateColumnWidth = useMemo(
+		() =>
+			debounce((columnIndex: number, newWidth: number) => {
+				setColumns((prevColumns) => {
+					const newColumns = [...prevColumns];
+					newColumns[columnIndex] = {
+						...newColumns[columnIndex],
+						width: newWidth,
+					};
+					return newColumns;
+				});
+			}, 100),
+		[],
+	);
+
 	const rowClassName = useCallback(() => {
 		return `${stripe ? "olt-table-stripe" : ""} ${rowClickable ? "olt-table-row-clickable" : ""} ${
 			tableProps.rowClassName || ""
 		}`;
 	}, [stripe, rowClickable, tableProps.rowClassName]);
 
-	const handleResize =
-		(index: number): ((e: React.SyntheticEvent, data: ResizeCallbackData) => void) =>
-		(_, { size }) => {
-			setColumns((prevColumns) => {
-				const newColumns = [...prevColumns];
-				newColumns[index] = {
-					...newColumns[index],
-					width: size.width,
-				};
-				return newColumns;
-			});
-		};
+	const handleResize = useCallback(
+		(columnIndex: number) => (newWidth: number) => {
+			debouncedUpdateColumnWidth(columnIndex, newWidth);
+		},
+		[debouncedUpdateColumnWidth],
+	);
 
-	const mergedColumns = columns.map((col, index) => ({
-		...col,
-		onHeaderCell: (column: any) => ({
-			width: column.width,
-			// 传递重命名后的 onColumnResize prop
-			onColumnResize: handleResize(index),
-		}),
-	}));
+	const mergedColumns = useMemo(() => {
+		return columns.map((col, index) => ({
+			...col,
+			onHeaderCell: (column: any) => ({
+				width: column.width,
+				columnIndex: index,
+				onColumnResize: handleResize(index),
+			}),
+		}));
+	}, [columns, handleResize]);
+
+	// 当外部 columns 改变时同步内部状态
+	useEffect(() => {
+		setColumns(tableProps.columns || []);
+	}, [tableProps.columns]);
 
 	useEffect(() => {
 		if (tableProps?.formRef?.current && params?.[1]) {
 			tableProps.formRef.current.setFieldsValue(params[1]);
 		}
 	}, [params, tableProps?.formRef]);
+
+	// 组件卸载时清理防抖函数
+	useEffect(() => {
+		return () => {
+			debouncedUpdateColumnWidth.cancel();
+		};
+	}, [debouncedUpdateColumnWidth]);
 
 	return (
 		<div ref={containerRef} className="page-container">

@@ -4,6 +4,7 @@ import { useLayoutEffect, useRef } from "react";
 /**
  * 自适应表格高度 Hook - 基于 CSS Flexbox
  * 使用纯 CSS 实现表格 tbody 自适应高度，性能更好，更稳定
+ * 同时处理 flex 布局下的固定列阴影问题
  */
 export function useFlexTableHeight() {
 	const containerRef = useRef<HTMLDivElement>(null);
@@ -23,52 +24,58 @@ export function useFlexTableHeight() {
 			document.body.classList.remove("multi-tab-enabled");
 		}
 
+		// 固定列阴影处理
+		const scrollContainer = container.querySelector(".ant-table-container") as HTMLElement;
+		const tableElement = container.querySelector(".ant-table") as HTMLElement;
+
+		if (scrollContainer && tableElement) {
+			// 检查滚动状态并更新 ping 类名
+			const updatePingClasses = () => {
+				const { scrollLeft, scrollWidth, clientWidth } = scrollContainer;
+
+				// 移除现有的 ping 类名
+				tableElement.classList.remove("ant-table-ping-left", "ant-table-ping-right");
+
+				// 判断是否可以向左滚动（内容已经向右滚动了）
+				const canScrollLeft = scrollLeft > 0;
+				// 判断是否可以向右滚动（内容还可以继续向左滚动）
+				const canScrollRight = scrollLeft < scrollWidth - clientWidth - 1; // -1 为了处理浮点数精度问题
+
+				// 添加相应的 ping 类名
+				if (canScrollLeft) {
+					tableElement.classList.add("ant-table-ping-left");
+				}
+				if (canScrollRight) {
+					tableElement.classList.add("ant-table-ping-right");
+				}
+			};
+
+			// 初始检查
+			updatePingClasses();
+
+			// 监听滚动事件
+			scrollContainer.addEventListener("scroll", updatePingClasses, { passive: true });
+
+			// 监听容器大小变化（可能影响滚动状态）
+			const resizeObserver = new ResizeObserver(updatePingClasses);
+			resizeObserver.observe(scrollContainer);
+			resizeObserver.observe(tableElement);
+
+			// 清理函数中包含滚动监听器的清理
+			return () => {
+				// 清理时移除类名
+				container.classList.remove("adaptive-table-container");
+				// 清理滚动监听
+				scrollContainer.removeEventListener("scroll", updatePingClasses);
+				resizeObserver.disconnect();
+			};
+		}
+
+		// 如果没有找到表格元素，只做基本的清理
 		return () => {
-			// 清理时移除类名
 			container.classList.remove("adaptive-table-container");
 		};
 	}, [multiTab]);
 
 	return { containerRef };
-}
-
-/**
- * 页面级别的高度管理 Hook
- * 确保页面容器占满可用高度
- */
-export function usePageHeight() {
-	const pageRef = useRef<HTMLDivElement>(null);
-
-	useLayoutEffect(() => {
-		const updateHeight = () => {
-			const page = pageRef.current;
-			if (!page) return;
-
-			// 计算页面可用高度
-			const main = document.getElementById("olt-layout-main");
-			const header = document.getElementById("olt-layout-header-wrapper");
-
-			if (main && header) {
-				const mainRect = main.getBoundingClientRect();
-				// const headerHeight = header.offsetHeight;
-				const viewportHeight = window.innerHeight;
-
-				// 设置页面高度为视口高度减去导航栏等固定元素高度
-				const availableHeight = viewportHeight - mainRect.top;
-				page.style.height = `${availableHeight}px`;
-			}
-		};
-
-		// 初始设置
-		updateHeight();
-
-		// 监听窗口大小变化
-		window.addEventListener("resize", updateHeight);
-
-		return () => {
-			window.removeEventListener("resize", updateHeight);
-		};
-	}, []);
-
-	return { pageRef };
 }
