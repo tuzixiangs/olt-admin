@@ -15,59 +15,38 @@
 	}
 }
 
-/* .page-container {
-	.ant-pro-table {
-		height: calc(100% - 148px);
-		.ant-pro-card:last-child {
-			height: 100%;
-		}
-	}
 
-	.ant-table-wrapper {
-		height: 100%;
-		.ant-spin-nested-loading {
-			height: 100%;
-			.ant-spin-container {
-        display: flex;
-        flex-flow: column nowrap;
-				height: 100%;
-				.ant-table {
-					flex: auto;
-					overflow: hidden;
-					.ant-table-container {
-						height: 100%;
-						display: flex;
-						flex-flow: column nowrap;
-						.ant-table-header {
-							overflow: hidden;
-							flex: none;
-						}
-						.ant-table-body {
-							overflow: auto scroll;
-							flex: auto;
-						}
-					}
-				}
-			}
-      .ant-table-pagination {
-        flex: none;
-      }
-		}
-	}
-} */
-
-
-.react-resizable {
-  position: relative;
-  background-clip: padding-box;
+/* 列宽拖拽样式 */
+.column-resize-handle {
+  transition: border-color 0.2s ease;
 }
 
-.react-resizable-handle {
-  position: absolute;
-  width: 10px;
-  height: 100%;
-  bottom: 0;
-  right: -5px;
+.column-resize-handle:hover {
+  border-right: 3px solid #1890ff !important;
   cursor: col-resize;
-  z-index: 1;
+}
+
+/* 拖拽辅助线样式 */
+.column-resize-guide-line {
+  animation: fadeIn 0.1s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* 表格头部样式优化 */
+.olt-table .ant-table-thead > tr > th {
+  position: relative;
+}
+
+/* 确保拖拽手柄在固定列中正常显示 */
+.olt-table .ant-table-cell-fix-left .column-resize-handle,
+.olt-table .ant-table-cell-fix-right .column-resize-handle {
+  z-index: 12;
 }
