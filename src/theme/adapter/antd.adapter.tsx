@@ -58,7 +58,15 @@ export const AntdAdapter: UILibraryAdapter = ({ mode, children }) => {
 	return (
 		<ConfigProvider
 			locale={language.antdLocal}
-			theme={{ algorithm, token, components }}
+			theme={{
+				algorithm,
+				token,
+				components,
+				// 启用 CSS 变量支持
+				cssVar: {
+					prefix: "ant",
+				},
+			}}
 			tag={{
 				style: {
 					borderRadius: removePx(baseThemeTokens.borderRadius.md),
